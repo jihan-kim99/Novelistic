@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { AppBar, Box, Button, Divider, TextField, Toolbar, Typography } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 import EPubViewer from "@/components/molecules/epubViewer";
@@ -56,7 +56,12 @@ const L2i = () => {
   };
 
   return (
-    <Box component="main">
+    <Box component="main" sx={{ flexGrow: 1 }}>
+      <Toolbar>
+        <Typography variant="h2" fontWeight='bold' component="div" paddingLeft="25px" sx={{ flexGrow: 1 }}>
+          Novelistic
+        </Typography>
+      </Toolbar>
       {fileText ? (
         <EPubViewer
           fileText={fileText}
