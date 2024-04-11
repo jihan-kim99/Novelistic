@@ -85,7 +85,7 @@ const TxtViewer = ({
       setImageUrl(`data:image/png;base64,${data.image}`);
     } catch (error) {
       console.log('failed')
-      setImageUrl('/image.png');
+      setImageUrl('/error.png');
     }
   };
 
