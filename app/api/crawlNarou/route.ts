@@ -4,8 +4,6 @@ import axios from 'axios';
 import { JSDOM } from 'jsdom';
 import { streamToString } from "@/utils/streamToString";
 
-
-
 async function crawlWebsite(url: string): Promise<string> {
   try {
     console.log('url', url)

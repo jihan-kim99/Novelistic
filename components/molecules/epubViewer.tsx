@@ -49,23 +49,39 @@ const TxtViewer = ({
   }, [fileText]);
 
   const generateImage = async (description: string) => {
-    const fetchedData = await fetch("/api/generateImage", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        description: description,
-      }),
-    });
+    const urlEncodedDescription = encodeURIComponent(description);
+    const eventSource = new EventSource("/api/generateImage?description=" + urlEncodedDescription);
 
-    if (!fetchedData.ok) {
-      console.error("Error fetching image:", fetchedData.statusText);
-      setImageUrl(null);
-      return;
-    }
-    const { image: base64Image } = await fetchedData.json();
-    setImageUrl(`data:image/jpeg;base64,${base64Image}`);
+    eventSource.addEventListener('wait', (event) => {
+      console.log('wait:', event.data);
+    });
+    eventSource.addEventListener('image', (event) => {
+      // image is coming as base64 encoded string
+      const image = event.data;
+      setImageUrl(`data:image/jpeg;base64,${image}`);
+      eventSource.close();
+    });
+    eventSource.onerror = (error) => {
+      console.error('EventSource failed:', error);
+      eventSource.close();
+    };
+    // const fetchedData = await fetch("/api/generateImage", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     description: description,
+    //   }),
+    // });
+
+    // if (!fetchedData.ok) {
+    //   console.error("Error fetching image:", fetchedData.statusText);
+    //   setImageUrl(null);
+    //   return;
+    // }
+    // const { image: base64Image } = await fetchedData.json();
+    // setImageUrl(`data:image/jpeg;base64,${base64Image}`);
   };
 
   const handleAskAI = async () => {
@@ -80,7 +96,6 @@ const TxtViewer = ({
     });
     const data = await res.json();
     const imageDesc = JSON.parse(data.text.message.content);
-    console.log(imageDesc.isImage);
     if (imageDesc.isImage) {
       setImageUrl(null);
       console.debug(imageDesc.description);
