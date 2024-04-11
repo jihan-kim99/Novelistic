@@ -1,113 +1,143 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { Box, Button, TextField, Typography } from "@mui/material";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+
+import EPubViewer from "@/components/molecules/epubViewer";
+
+const L2i = () => {
+  const [file, setFile] = useState<File | null>(null);
+  const [fileText, setFileText] = useState<string>("");
+  const [subTitle, setSubTitle] = useState<string>("");
+  const [webUrl, setWebUrl] = useState("");
+  const [isNarou, setIsNarou] = useState(false);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      setFile(file);
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target && event.target.result) {
+            const text = event.target.result as string;
+            setFileText(text);
+          }
+        };
+        reader.readAsText(file);
+      }
+    }
+  };
+  const handleWebUrlCrawl = () => {
+    fetch("/api/crawlNarou", {
+      method: "POST",
+      body: JSON.stringify({ url: webUrl }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        setFileText(res.lightText);
+        setSubTitle(res.subTitle);
+        setIsNarou(true);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+  const handleNextPage = () => {
+    let url = new URL(webUrl);
+    let pathParts = url.pathname.split("/");
+    pathParts[2] = (parseInt(pathParts[2]) + 1).toString();
+    let newPath = pathParts.join("/");
+    url.pathname = newPath;
+    setWebUrl(url.toString());
+    handleWebUrlCrawl();
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+    <Box component="main">
+      {fileText ? (
+        <EPubViewer
+          fileText={fileText}
+          subTitle={subTitle}
+          isNarou={isNarou}
+          handleNextPage={handleNextPage}
         />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      ) : (
+        <Box paddingLeft="50px">
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "start",
+              alignItems: "start",
+              width: "100%",
+            }}
+          >
+            <Typography fontSize={40} fontWeight="bold" mt="50px">
+              택본 업로드
+            </Typography>
+          </Box>
+          <Box display="flex" justifyContent="start" alignItems="start">
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+              style={{ borderRadius: 20, width: 200, marginTop: "50px" }}
+            >
+              업로드 버튼
+              <input type="file" hidden onChange={handleFileChange} />
+            </Button>
+          </Box>
+          <Typography
+            fontSize={40}
+            fontWeight="bold"
+            textAlign="start"
+            marginTop={10}
+          >
+            소설가가 되자 주소 입력
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              overflowX: "auto",
+              width: "100%",
+              mt: "50px",
+              justifyContent: "start",
+              alignItems: "start",
+            }}
+          >
+            <Box sx={{ width: "70%" }}>
+              <TextField
+                value={webUrl}
+                fullWidth
+                variant="outlined"
+                placeholder="https://ncode.syosetu.com/n******/1/"
+                onChange={(e) => setWebUrl(e.target.value)}
+              />
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "start",
+              alignItems: "start",
+            }}
+          >
+            <Button
+              variant="contained"
+              style={{ marginTop: "50px", borderRadius: 20, width: 200 }}
+              onClick={handleWebUrlCrawl}
+            >
+              Load
+            </Button>
+          </Box>
+        </Box>
+      )}
+    </Box>
   );
-}
+};
+
+export default L2i;
