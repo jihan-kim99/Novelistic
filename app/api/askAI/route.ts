@@ -1,11 +1,11 @@
 import OpenAI from "openai";
-import type { NextApiRequest } from "next";
-import { NextResponse } from "next/server";
-import { text } from "stream/consumers";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextApiRequest) {
+import { streamToString } from "@/utils/streamToString";
+
+export async function POST(req: NextRequest) {
   const apiKey = process.env.OPENAI_API_KEY;
-  const body = await text(req.body);
+  const body = await streamToString(req.body)
   const prompt = JSON.parse(body).prompt;
   const openai = new OpenAI({
     apiKey: apiKey,

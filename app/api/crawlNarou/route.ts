@@ -1,9 +1,9 @@
 
-import type { NextApiRequest } from "next";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import axios from 'axios';
 import { JSDOM } from 'jsdom';
-import { text } from "stream/consumers";
+import { streamToString } from "@/utils/streamToString";
+
 
 
 async function crawlWebsite(url: string): Promise<string> {
@@ -24,8 +24,8 @@ async function crawlWebsite(url: string): Promise<string> {
   }
 }
 
-export async function POST(req: NextApiRequest) {
-  const body = await text(req.body);
+export async function POST(req: NextRequest) {
+  const body = await streamToString(req.body)
 
   const url = JSON.parse(body).url;
 
