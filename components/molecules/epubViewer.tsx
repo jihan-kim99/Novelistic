@@ -18,6 +18,7 @@ const TxtViewer = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [description, setDescription] = useState<string>("");
 
   const fileInLine = fileText.split("\n");
   const pageSize = 25;
@@ -56,14 +57,14 @@ const TxtViewer = ({
     if (imageDesc.isImage) {
       setImageUrl(null);
       console.debug(imageDesc.description);
-      generateImage(imageDesc.description);
+      setDescription(imageDesc.description);
     }
   };
 
-  const generateImage = async (description: string) => {
-    const urlEncodedDescription = encodeURIComponent(description);
-    const eventSource = new EventSource("/api/generateImage?description=" + urlEncodedDescription);
-
+useEffect(() => {
+  const urlEncodedDescription = encodeURIComponent(description);
+  const eventSource = new EventSource("/api/generateImage?description=" + urlEncodedDescription);
+  const generateImage = async () => {
     eventSource.onopen = () => {
       console.log('EventSource connected');
     }
@@ -81,6 +82,13 @@ const TxtViewer = ({
       eventSource.close();
     };
   };
+
+  generateImage();
+
+  return () => {
+    eventSource.close();
+  };
+}, [description]);
 
   useEffect(() => {
     handleAskAI();
