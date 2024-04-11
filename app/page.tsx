@@ -71,7 +71,7 @@ const L2i = () => {
           setFileText={setFileText}
         />
       ) : (
-        <Box paddingLeft="20px">
+        <Box padding="0 20px 0 20px">
           <Box
             sx={{
               display: "flex",
@@ -115,13 +115,14 @@ const L2i = () => {
               alignItems: "start",
             }}
           >
-            <Box sx={{ width: "70%" }}>
+            <Box width={{lg: '50%', xs: '100%'}}>
               <TextField
                 value={webUrl}
                 fullWidth
                 variant="outlined"
-                placeholder="https://ncode.syosetu.com/n******/1/"
+                placeholder="소설가가 되자 URL 예시: https://ncode.syosetu.com/n******/1/"
                 onChange={(e) => setWebUrl(e.target.value)}
+                sx={{ color : "black" }}
               />
             </Box>
           </Box>
