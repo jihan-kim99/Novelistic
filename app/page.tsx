@@ -6,6 +6,68 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 import EPubViewer from "@/components/molecules/epubViewer";
 
+// const narou = [       
+//   <>   
+// <Box display="flex" justifyContent="start" alignItems="start">
+// <Button
+//   component="label"
+//   role={undefined}
+//   variant="outlined"
+//   tabIndex={-1}
+//   startIcon={<CloudUploadIcon />}
+//   style={{ borderRadius: 20, width: 200, marginTop: "50px", color: "black", borderColor: "black" }}
+// >
+//   업로드 버튼
+//   <input type="file" hidden onChange={handleFileChange} />
+// </Button>
+// </Box>
+// <Typography
+// fontSize={40}
+// fontWeight="bold"
+// textAlign="start"
+// marginTop={10}
+// >
+// 소설가가 되자 (개발중)
+// </Typography>
+// <Box
+// sx={{
+//   display: "flex",
+//   overflowX: "auto",
+//   width: "100%",
+//   mt: "50px",
+//   justifyContent: "start",
+//   alignItems: "start",
+// }}
+// >
+// <Box width={{lg: '50%', xs: '100%'}}>
+//   <TextField
+//     value={webUrl}
+//     fullWidth
+//     variant="outlined"
+//     placeholder="소설가가 되자 URL 예시: https://ncode.syosetu.com/n******/1/"
+//     onChange={(e) => setWebUrl(e.target.value)}
+//     sx={{ color : "black" }}
+//   />
+// </Box>
+// </Box>
+// <Box
+// sx={{
+//   display: "flex",
+//   justifyContent: "start",
+//   alignItems: "start",
+// }}
+// >
+// <Button
+//   variant="outlined"
+//   style={{ marginTop: "50px", borderRadius: 20, width: 200, color: "black", borderColor: "black" }}
+//   onClick={handleWebUrlCrawl}
+// >
+//   Load
+// </Button>
+// </Box>
+// </>
+// ]
+
 const L2i = () => {
   const [file, setFile] = useState<File | null>(null);
   const [fileText, setFileText] = useState<string>("");
@@ -83,63 +145,6 @@ const L2i = () => {
             <Typography fontSize={40} fontWeight="bold" mt="50px">
               택본 업로드  (pc 사용을 권장합니다)
             </Typography>
-          </Box>
-          <Box display="flex" justifyContent="start" alignItems="start">
-            <Button
-              component="label"
-              role={undefined}
-              variant="outlined"
-              tabIndex={-1}
-              startIcon={<CloudUploadIcon />}
-              style={{ borderRadius: 20, width: 200, marginTop: "50px", color: "black", borderColor: "black" }}
-            >
-              업로드 버튼
-              <input type="file" hidden onChange={handleFileChange} />
-            </Button>
-          </Box>
-          <Typography
-            fontSize={40}
-            fontWeight="bold"
-            textAlign="start"
-            marginTop={10}
-          >
-            소설가가 되자 (개발중)
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              overflowX: "auto",
-              width: "100%",
-              mt: "50px",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
-          >
-            <Box width={{lg: '50%', xs: '100%'}}>
-              <TextField
-                value={webUrl}
-                fullWidth
-                variant="outlined"
-                placeholder="소설가가 되자 URL 예시: https://ncode.syosetu.com/n******/1/"
-                onChange={(e) => setWebUrl(e.target.value)}
-                sx={{ color : "black" }}
-              />
-            </Box>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
-          >
-            <Button
-              variant="outlined"
-              style={{ marginTop: "50px", borderRadius: 20, width: 200, color: "black", borderColor: "black" }}
-              onClick={handleWebUrlCrawl}
-            >
-              Load
-            </Button>
           </Box>
         </Box>
       )}
