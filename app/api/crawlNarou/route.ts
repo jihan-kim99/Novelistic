@@ -8,6 +8,7 @@ import { streamToString } from "@/utils/streamToString";
 
 async function crawlWebsite(url: string): Promise<string> {
   try {
+    console.log('url', url)
     const response = await axios.get(url);
     const dom = new JSDOM(response.data);
     const novelHonbun = dom.window.document.querySelector('#novel_honbun');
