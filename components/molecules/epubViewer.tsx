@@ -34,6 +34,11 @@ const TxtViewer = ({
     scrollToTop();
     handleAskAI();
   };
+  
+  useEffect(() => {
+    scrollToTop();
+    handleAskAI();
+  }, [fileText])
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -58,44 +63,30 @@ const TxtViewer = ({
       setImageUrl(null);
       console.debug(imageDesc.description);
       setDescription(imageDesc.description);
+      generateImage();
     }
   };
 
-useEffect(() => {
-  const urlEncodedDescription = encodeURIComponent(description);
-  const eventSource = new EventSource("/api/generateImage?description=" + urlEncodedDescription);
   const generateImage = async () => {
-    eventSource.onopen = () => {
-      console.log('EventSource connected');
+    console.log('generateImage')
+    try{
+      const res = await fetch("https://asia-northeast1-chatbot-32ff4.cloudfunctions.net/novelistic/generateImage", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          description,
+        }),
+      });
+      console.log('success fetch')
+      const data = await res.json();
+      console.log(data.image.length)
+      setImageUrl(`data:image/png;base64,${data.image}`);
+    } catch (error) {
+      console.log('failed')
     }
-    eventSource.addEventListener('wait', (event) => {
-      console.log('wait: ', event.data);
-    });
-    eventSource.addEventListener('image', (event) => {
-      // image is coming as base64 encoded string
-      const image = event.data;
-      setImageUrl(`data:image/jpeg;base64,${image}`);
-      eventSource.close();
-    });
-    eventSource.onerror = (error) => {
-      console.error('EventSource failed:', error);
-      eventSource.close();
-    };
   };
-
-  generateImage();
-
-  return () => {
-    eventSource.close();
-  };
-}, [description]);
-
-  useEffect(() => {
-    handleAskAI();
-    setCurrentPage(0);
-    scrollToTop();
-    setImageUrl(null);
-  }, [fileText]);
 
   return (
     <>

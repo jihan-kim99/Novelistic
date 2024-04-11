@@ -102,7 +102,7 @@ const L2i = () => {
             textAlign="start"
             marginTop={10}
           >
-            소설가가 되자 주소 입력 현재 오류 남 ㅈㅅ
+            소설가가 되자 (현재 오류)
           </Typography>
           <Box
             sx={{
