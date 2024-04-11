@@ -80,7 +80,7 @@ const L2i = () => {
             }}
           >
             <Typography fontSize={40} fontWeight="bold" mt="50px">
-              택본 업로드
+              택본 업로드  (pc 사용을 권장합니다)
             </Typography>
           </Box>
           <Box display="flex" justifyContent="start" alignItems="start">
@@ -102,7 +102,7 @@ const L2i = () => {
             textAlign="start"
             marginTop={10}
           >
-            소설가가 되자 (현재 오류)
+            소설가가 되자 (개발중)
           </Typography>
           <Box
             sx={{
