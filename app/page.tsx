@@ -102,7 +102,7 @@ const L2i = () => {
             textAlign="start"
             marginTop={10}
           >
-            소설가가 되자 주소 입력
+            소설가가 되자 주소 입력 현재 오류 남 ㅈㅅ
           </Typography>
           <Box
             sx={{
@@ -133,6 +133,7 @@ const L2i = () => {
           >
             <Button
               variant="contained"
+              disabled
               style={{ marginTop: "50px", borderRadius: 20, width: 200 }}
               onClick={handleWebUrlCrawl}
             >
