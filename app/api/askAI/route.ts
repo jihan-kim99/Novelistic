@@ -17,14 +17,12 @@ export async function POST(req: NextRequest) {
     messages: [
       {
         role: "system",
-        content: `You will check if there is just one scene that is interesting to generate in given text.
-          Only one scene is allowed to generate.
-          Only describe the scene that is interesting to generate.
-          If the check pass You will return the JSON object with the flag "isImage" set to true and fill description with tags.
+        content: `You will find only one scene that is interesting to generate in given text.
+          Only one give one cut scene from the text.
           Give least 10 tags in the form of danbooru tag. For example, "blue_eyes, long_hair, school_uniform".
           Give detailed expression on the person should be in the picture. Always add '1girl' or '1boy' tag when descibing person. 
-          If the check fails You will return the JSON object with the flag "isImage" set to false.
-          {isImage: false, description: ""}
+          You will return the Json in the format as below:
+          {isImage: True, description: "1girl, "}
           `,
       },
       { role: "user", content: prompt },

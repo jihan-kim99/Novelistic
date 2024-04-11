@@ -41,49 +41,6 @@ const TxtViewer = ({
     });
   };
 
-  useEffect(() => {
-    handleAskAI();
-    setCurrentPage(0);
-    scrollToTop();
-    setImageUrl(null);
-  }, [fileText]);
-
-  const generateImage = async (description: string) => {
-    const urlEncodedDescription = encodeURIComponent(description);
-    const eventSource = new EventSource("/api/generateImage?description=" + urlEncodedDescription);
-
-    eventSource.addEventListener('wait', (event) => {
-      console.log('wait:', event.data);
-    });
-    eventSource.addEventListener('image', (event) => {
-      // image is coming as base64 encoded string
-      const image = event.data;
-      setImageUrl(`data:image/jpeg;base64,${image}`);
-      eventSource.close();
-    });
-    eventSource.onerror = (error) => {
-      console.error('EventSource failed:', error);
-      eventSource.close();
-    };
-    // const fetchedData = await fetch("/api/generateImage", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     description: description,
-    //   }),
-    // });
-
-    // if (!fetchedData.ok) {
-    //   console.error("Error fetching image:", fetchedData.statusText);
-    //   setImageUrl(null);
-    //   return;
-    // }
-    // const { image: base64Image } = await fetchedData.json();
-    // setImageUrl(`data:image/jpeg;base64,${base64Image}`);
-  };
-
   const handleAskAI = async () => {
     const res = await fetch("/api/askAI", {
       method: "POST",
@@ -103,13 +60,42 @@ const TxtViewer = ({
     }
   };
 
+  const generateImage = async (description: string) => {
+    const urlEncodedDescription = encodeURIComponent(description);
+    const eventSource = new EventSource("/api/generateImage?description=" + urlEncodedDescription);
+
+    eventSource.onopen = () => {
+      console.log('EventSource connected');
+    }
+    eventSource.addEventListener('wait', (event) => {
+      console.log('wait: ', event.data);
+    });
+    eventSource.addEventListener('image', (event) => {
+      // image is coming as base64 encoded string
+      const image = event.data;
+      setImageUrl(`data:image/jpeg;base64,${image}`);
+      eventSource.close();
+    });
+    eventSource.onerror = (error) => {
+      console.error('EventSource failed:', error);
+      eventSource.close();
+    };
+  };
+
+  useEffect(() => {
+    handleAskAI();
+    setCurrentPage(0);
+    scrollToTop();
+    setImageUrl(null);
+  }, [fileText]);
+
   return (
     <>
       <Typography variant="h4" textAlign="center" paddingTop={5}>
         {subTitle}
       </Typography>
       <Grid container justifyContent="center" alignItems="center">
-        <Grid item xs={6} flex={1} flexWrap="wrap">
+        <Grid item lg={6} sm={12} flex={1} flexWrap="wrap">
           {currentPageText.map((line, index) => (
             <Typography
               key={index}
@@ -124,7 +110,8 @@ const TxtViewer = ({
         </Grid>
         <Grid
           item
-          xs={6}
+          lg={6} 
+          sm={12}
           sx={{
             display: "flex",
             alignItems: "center",
@@ -168,7 +155,7 @@ const TxtViewer = ({
           variant="contained"
           disabled={!isNarou}
           onClick={() => handleNextPage()}
-          style={{ marginRight: 10 }}
+          style={{ marginRight: 10, borderRadius: 20}}
         >
           Next Episode
         </Button>
