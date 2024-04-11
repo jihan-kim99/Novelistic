@@ -51,6 +51,7 @@ export async function GET(req: NextRequest) {
       'Cache-Control': 'no-cache, no-transform',
       'X-Accel-Buffering': 'no',
       'Content-Encoding': 'none',
+      'X-Content-Type-Options': 'nosniff',
     }
   });
   // return NextResponse.json({ image: encoded }, { status: 200 });
