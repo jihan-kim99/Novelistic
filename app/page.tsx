@@ -134,7 +134,6 @@ const L2i = () => {
               택본 업로드  (pc 사용을 권장합니다)
             </Typography>
           </Box>
-        </Box>
         <Box display="flex" justifyContent="start" alignItems="start">
         <Button
         component="label"
@@ -148,8 +147,8 @@ const L2i = () => {
            <input type="file" hidden onChange={handleFileChange} />
          </Button>
          </Box>
+        </Box>
         </>
-
       )}
     </Box>
   );
