@@ -8,19 +8,6 @@ import EPubViewer from "@/components/molecules/epubViewer";
 
 // const narou = [       
 //   <>   
-// <Box display="flex" justifyContent="start" alignItems="start">
-// <Button
-//   component="label"
-//   role={undefined}
-//   variant="outlined"
-//   tabIndex={-1}
-//   startIcon={<CloudUploadIcon />}
-//   style={{ borderRadius: 20, width: 200, marginTop: "50px", color: "black", borderColor: "black" }}
-// >
-//   업로드 버튼
-//   <input type="file" hidden onChange={handleFileChange} />
-// </Button>
-// </Box>
 // <Typography
 // fontSize={40}
 // fontWeight="bold"
@@ -133,6 +120,7 @@ const L2i = () => {
           setFileText={setFileText}
         />
       ) : (
+        <>
         <Box padding="0 20px 0 20px">
           <Box
             sx={{
@@ -147,6 +135,21 @@ const L2i = () => {
             </Typography>
           </Box>
         </Box>
+        <Box display="flex" justifyContent="start" alignItems="start">
+        <Button
+        component="label"
+        role={undefined}
+           variant="outlined"
+           tabIndex={-1}
+           startIcon={<CloudUploadIcon />}
+           style={{ borderRadius: 20, width: 200, marginTop: "50px", color: "black", borderColor: "black" }}
+         >
+           업로드 버튼
+           <input type="file" hidden onChange={handleFileChange} />
+         </Button>
+         </Box>
+        </>
+
       )}
     </Box>
   );
