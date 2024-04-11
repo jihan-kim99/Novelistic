@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Pagination, Typography } from "@mui/material";
+import { Box, Button, Grid, Pagination, Stack, TextField, Typography } from "@mui/material";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useState } from "react";
 import Lottie from "react-lottie-player";
@@ -8,21 +8,25 @@ import loadingJson from "@/components/atom/loading.json";
 const TxtViewer = ({
   fileText,
   isNarou,
-  handleNextPage,
   subTitle,
+  handleNextPage,
+  setFileText,
 }: {
   fileText: string;
   isNarou: boolean;
   handleNextPage: () => void;
+  setFileText: (text: string) => void;
   subTitle: string;
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [description, setDescription] = useState<string>("");
+  const [pageInput, setPageInput] = useState<number>(currentPage);
 
   const fileInLine = fileText.split("\n");
   const pageSize = 25;
 
+  
   const pageCount = Math.ceil(fileInLine.length / pageSize);
   const startIndex = currentPage * pageSize;
   const endIndex = startIndex + pageSize;
@@ -34,6 +38,13 @@ const TxtViewer = ({
     scrollToTop();
     handleAskAI();
   };
+
+  const handleJumpPage = () => {
+    setCurrentPage(pageInput);
+    setImageUrl(null);
+    scrollToTop();
+    handleAskAI();
+  }
   
   useEffect(() => {
     scrollToTop();
@@ -101,9 +112,8 @@ const TxtViewer = ({
               key={index}
               variant="body1"
               textAlign="start"
-              paddingLeft={5}
-              paddingTop={2}
-              paddingRight={3}
+              margin={{lg: 5, xs: 0}}
+              marginTop={{lg: 5, xs: 2}}
             >
               {line}
             </Typography>
@@ -120,13 +130,14 @@ const TxtViewer = ({
           }}
         >
           {imageUrl ? (
-            <Box sx={{
-              aspectRatio: '1/1',
-              height: 'auto',
-              position: 'relative',
-
-              width: '100%',
-            }}
+            <Box 
+              margin={{lg: 4, xs: 0}}  
+              sx={{
+                aspectRatio: '1/1',
+                height: 'auto',
+                position: 'relative',
+                width: '100%',
+              }}
             >
               <Image
                 src={imageUrl}
@@ -146,29 +157,53 @@ const TxtViewer = ({
           )}
         </Grid>
       </Grid>
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        margin={10}
-      >
-        <Pagination
-          count={pageCount}
-          page={currentPage + 1}
-          siblingCount={5}
-          onChange={handlePageChange}
-          color="primary"
+      <Stack spacing={3} direction="column" justifyContent="center" alignItems="center">
+      <Pagination
+        count={pageCount}
+        page={currentPage + 1}
+        variant="outlined"
+        siblingCount={5}
+        onChange={handlePageChange}
+      />
+      <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap">
+        <TextField
+          id="jumpPage"
+          label="Jump to Page"
+          type="number"
+          variant="outlined"
+          size="small"
+          value={pageInput + 1}
+          onChange={(e) => setPageInput(parseInt(e.target.value) - 1)}
+          style={{ width: 200 }}
         />
-
         <Button
-          variant="contained"
+          variant="outlined"
+          onClick={handleJumpPage}
+          style={{ borderRadius: 20, color: "black", borderColor: "black"}}
+        >
+          Jump
+        </Button>
+      </Stack>
+      <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap">
+        <Button
+          style={{ borderRadius: 20, width: '150px', color: "black", borderColor: "black"}}
+          variant="outlined"
+          onClick={() => {
+            setFileText("");
+          }}
+          >
+          Go Back
+        </Button>
+        <Button
+          variant="outlined"
           disabled={!isNarou}
           onClick={() => handleNextPage()}
-          style={{ marginRight: 10, borderRadius: 20}}
-        >
+          style={{ width: '150px', borderRadius: 20, color: "black", borderColor: "black"}}
+          >
           Next Episode
         </Button>
-      </Box>
+        </Stack>
+      </Stack>
     </>
   );
 };

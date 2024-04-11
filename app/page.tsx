@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AppBar, Box, Button, Divider, TextField, Toolbar, Typography } from "@mui/material";
+import { Box, Button, Container, TextField, Toolbar, Typography } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 import EPubViewer from "@/components/molecules/epubViewer";
@@ -58,7 +58,7 @@ const L2i = () => {
   return (
     <Box component="main" sx={{ flexGrow: 1 }}>
       <Toolbar>
-        <Typography variant="h2" fontWeight='bold' component="div" paddingLeft="25px" sx={{ flexGrow: 1 }}>
+        <Typography variant="h2" fontWeight='bold' component="div" sx={{ flexGrow: 1 }}>
           Novelistic
         </Typography>
       </Toolbar>
@@ -68,9 +68,10 @@ const L2i = () => {
           subTitle={subTitle}
           isNarou={isNarou}
           handleNextPage={handleNextPage}
+          setFileText={setFileText}
         />
       ) : (
-        <Box paddingLeft="50px">
+        <Box paddingLeft="20px">
           <Box
             sx={{
               display: "flex",
@@ -87,10 +88,10 @@ const L2i = () => {
             <Button
               component="label"
               role={undefined}
-              variant="contained"
+              variant="outlined"
               tabIndex={-1}
               startIcon={<CloudUploadIcon />}
-              style={{ borderRadius: 20, width: 200, marginTop: "50px" }}
+              style={{ borderRadius: 20, width: 200, marginTop: "50px", color: "black", borderColor: "black" }}
             >
               업로드 버튼
               <input type="file" hidden onChange={handleFileChange} />
@@ -132,9 +133,8 @@ const L2i = () => {
             }}
           >
             <Button
-              variant="contained"
-              disabled
-              style={{ marginTop: "50px", borderRadius: 20, width: 200 }}
+              variant="outlined"
+              style={{ marginTop: "50px", borderRadius: 20, width: 200, color: "black", borderColor: "black" }}
               onClick={handleWebUrlCrawl}
             >
               Load
