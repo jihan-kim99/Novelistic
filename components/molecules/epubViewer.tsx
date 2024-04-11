@@ -85,6 +85,7 @@ const TxtViewer = ({
       setImageUrl(`data:image/png;base64,${data.image}`);
     } catch (error) {
       console.log('failed')
+      setImageUrl('/image.png');
     }
   };
 
@@ -94,7 +95,7 @@ const TxtViewer = ({
         {subTitle}
       </Typography>
       <Grid container justifyContent="center" alignItems="center">
-        <Grid item lg={6} sm={12} flex={1} flexWrap="wrap">
+        <Grid item lg={6} xs={12} flex={1} flexWrap="wrap">
           {currentPageText.map((line, index) => (
             <Typography
               key={index}
@@ -102,6 +103,7 @@ const TxtViewer = ({
               textAlign="start"
               paddingLeft={5}
               paddingTop={2}
+              paddingRight={3}
             >
               {line}
             </Typography>
@@ -109,8 +111,8 @@ const TxtViewer = ({
         </Grid>
         <Grid
           item
-          lg={6} 
-          sm={12}
+          lg={6}
+          xs={12}
           sx={{
             display: "flex",
             alignItems: "center",
@@ -118,12 +120,20 @@ const TxtViewer = ({
           }}
         >
           {imageUrl ? (
-            <Box sx={{ width: "100%", p: "4rem" }}>
+            <Box sx={{
+              aspectRatio: '1/1',
+              height: 'auto',
+              position: 'relative',
+
+              width: '100%',
+            }}
+            >
               <Image
                 src={imageUrl}
                 alt="Generated Image"
-                width={400}
-                height={400}
+                fill
+                priority
+                style={{ borderRadius: '1rem', objectFit: 'cover' }}
               />
             </Box>
           ) : (
