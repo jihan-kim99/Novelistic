@@ -8,14 +8,7 @@ import EPubViewer from "@/components/molecules/epubViewer";
 
 // const narou = [       
 //   <>   
-// <Typography
-// fontSize={40}
-// fontWeight="bold"
-// textAlign="start"
-// marginTop={10}
-// >
-// 소설가가 되자 (개발중)
-// </Typography>
+
 // <Box
 // sx={{
 //   display: "flex",
@@ -58,9 +51,7 @@ import EPubViewer from "@/components/molecules/epubViewer";
 const L2i = () => {
   const [file, setFile] = useState<File | null>(null);
   const [fileText, setFileText] = useState<string>("");
-  const [subTitle, setSubTitle] = useState<string>("");
-  const [webUrl, setWebUrl] = useState("");
-  const [isNarou, setIsNarou] = useState(false);
+  const [inputText, setInputText] = useState<string>("");
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -79,49 +70,21 @@ const L2i = () => {
       }
     }
   };
-  const handleWebUrlCrawl = () => {
-    fetch("/api/crawlNarou", {
-      method: "POST",
-      body: JSON.stringify({ url: webUrl }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        setFileText(res.lightText);
-        setSubTitle(res.subTitle);
-        setIsNarou(true);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  };
-  const handleNextPage = () => {
-    let url = new URL(webUrl);
-    let pathParts = url.pathname.split("/");
-    pathParts[2] = (parseInt(pathParts[2]) + 1).toString();
-    let newPath = pathParts.join("/");
-    url.pathname = newPath;
-    setWebUrl(url.toString());
-    handleWebUrlCrawl();
-  };
 
   return (
     <Box component="main" sx={{ flexGrow: 1 }}>
       <Toolbar>
-        <Typography variant="h2" fontWeight='bold' component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h2" fontWeight='bold' component="div">
           Novelistic
         </Typography>
       </Toolbar>
       {fileText ? (
         <EPubViewer
           fileText={fileText}
-          subTitle={subTitle}
-          isNarou={isNarou}
-          handleNextPage={handleNextPage}
           setFileText={setFileText}
         />
       ) : (
-        <>
-        <Box padding="0 20px 0 20px">
+        <Box padding="0 20px 0 20px" marginBlockEnd='50px'>
           <Box
             sx={{
               display: "flex",
@@ -147,8 +110,35 @@ const L2i = () => {
            <input type="file" hidden onChange={handleFileChange} />
          </Button>
          </Box>
+         <Box width={{md: '70%', xs:'100%'}} sx={{mt:"50px"}}>
+         <Typography
+            fontSize={40}
+            fontWeight="bold"
+            textAlign="start"
+            marginTop='50px'
+            >
+            소설 텍스트 복사하여 붙여넣기
+          </Typography>
+          <TextField
+            value= {inputText}
+            fullWidth
+            variant="outlined"
+            placeholder="소설 본문을 복사하여 붙여넣어주세요."
+            multiline
+            rows={10}
+            maxRows={10}
+            onChange={(e) => setInputText(e.target.value)}
+            sx={{ mt: '50px' }}
+          />
+          <Button
+            variant="outlined"
+            style={{ borderRadius: 20, width: 200, marginTop: "50px", color: "black", borderColor: "black" }}
+            onClick={() => setFileText(inputText)}
+          >
+            읽기 시작
+          </Button>
+          </Box>
         </Box>
-        </>
       )}
     </Box>
   );

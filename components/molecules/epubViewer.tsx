@@ -7,16 +7,10 @@ import loadingJson from "@/components/atom/loading.json";
 
 const TxtViewer = ({
   fileText,
-  isNarou,
-  subTitle,
-  handleNextPage,
   setFileText,
 }: {
   fileText: string;
-  isNarou: boolean;
-  handleNextPage: () => void;
   setFileText: (text: string) => void;
-  subTitle: string;
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -24,7 +18,7 @@ const TxtViewer = ({
   const [pageInput, setPageInput] = useState<number>(currentPage);
 
   const fileInLine = fileText.split("\n");
-  const pageSize = 25;
+  const pageSize = 50;
 
   
   const pageCount = Math.ceil(fileInLine.length / pageSize);
@@ -102,9 +96,6 @@ const TxtViewer = ({
 
   return (
     <>
-      <Typography variant="h4" textAlign="center" paddingTop={5}>
-        {subTitle}
-      </Typography>
       <Grid container justifyContent="center" alignItems="center">
         <Grid item lg={6} xs={12} flex={1} flexWrap="wrap">
           {currentPageText.map((line, index) => (
@@ -162,7 +153,7 @@ const TxtViewer = ({
         count={pageCount}
         page={currentPage + 1}
         variant="outlined"
-        siblingCount={5}
+        siblingCount={1}
         onChange={handlePageChange}
       />
       <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap">
@@ -193,14 +184,6 @@ const TxtViewer = ({
           }}
           >
           Go Back
-        </Button>
-        <Button
-          variant="outlined"
-          disabled={!isNarou}
-          onClick={() => handleNextPage()}
-          style={{ width: '150px', borderRadius: 20, color: "black", borderColor: "black"}}
-          >
-          Next Episode
         </Button>
         </Stack>
       </Stack>
