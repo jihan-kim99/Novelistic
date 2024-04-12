@@ -1,4 +1,12 @@
-import { Box, Button, Grid, Pagination, Stack, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  Pagination,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useState } from "react";
 import Lottie from "react-lottie-player";
@@ -8,7 +16,7 @@ import loadingJson from "@/components/atom/loading.json";
 const TxtViewer = ({
   fileText,
   setFileText,
-  setInputText
+  setInputText,
 }: {
   fileText: string;
   setFileText: (text: string) => void;
@@ -22,7 +30,6 @@ const TxtViewer = ({
   const fileInLine = fileText.split("\n");
   const pageSize = 100;
 
-  
   const pageCount = Math.ceil(fileInLine.length / pageSize);
   const startIndex = currentPage * pageSize;
   const endIndex = startIndex + pageSize;
@@ -30,7 +37,7 @@ const TxtViewer = ({
 
   const handlePageChange = (event: ChangeEvent<unknown>, value: number) => {
     setCurrentPage(value - 1);
-    setPageInput(value -1);
+    setPageInput(value - 1);
     setImageUrl(null);
     scrollToTop();
     handleAskAI();
@@ -41,12 +48,36 @@ const TxtViewer = ({
     setImageUrl(null);
     scrollToTop();
     handleAskAI();
-  }
-  
+  };
+
   useEffect(() => {
     scrollToTop();
     handleAskAI();
-  }, [fileText])
+  }, [fileText]);
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      const prevPageInput = currentPage;
+      console.log(prevPageInput);
+      if (event.key === "ArrowLeft") {
+        setCurrentPage((prevPageInput) => prevPageInput - 1);
+        setPageInput((pageInput) => pageInput - 1);
+        scrollToTop();
+        handleAskAI();
+      } else if (event.key === "ArrowRight") {
+        setCurrentPage((prevPageInput) => prevPageInput + 1);
+        setPageInput((pageInput) => pageInput + 1);
+        scrollToTop();
+        handleAskAI();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [currentPage]);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -76,24 +107,27 @@ const TxtViewer = ({
   };
 
   const generateImage = async () => {
-    console.log('generateImage')
-    try{
-      const res = await fetch("https://asia-northeast1-chatbot-32ff4.cloudfunctions.net/novelistic/generateImage", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          description,
-        }),
-      });
-      console.log('success fetch')
+    console.log("generateImage");
+    try {
+      const res = await fetch(
+        "https://asia-northeast1-chatbot-32ff4.cloudfunctions.net/novelistic/generateImage",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            description,
+          }),
+        }
+      );
+      console.log("success fetch");
       const data = await res.json();
-      console.log(data.image.length)
+      console.log(data.image.length);
       setImageUrl(`data:image/png;base64,${data.image}`);
     } catch (error) {
-      console.log('failed')
-      setImageUrl('/error.png');
+      console.log("failed");
+      setImageUrl("/error.png");
     }
   };
 
@@ -106,8 +140,8 @@ const TxtViewer = ({
               key={index}
               variant="body1"
               textAlign="start"
-              margin={{lg: 5, xs: 0}}
-              marginTop={{lg: 5, xs: 2}}
+              margin={{ lg: 5, xs: 0 }}
+              marginTop={{ lg: 5, xs: 2 }}
             >
               {line}
             </Typography>
@@ -124,14 +158,14 @@ const TxtViewer = ({
           }}
         >
           {imageUrl ? (
-            <Box 
-              margin={{lg: 4, xs: 0}}
-              marginBlockEnd={{lg: 4, xs: 4}} 
+            <Box
+              margin={{ lg: 4, xs: 0 }}
+              marginBlockEnd={{ lg: 4, xs: 4 }}
               sx={{
-                aspectRatio: '1/1',
-                height: 'auto',
-                position: 'relative',
-                width: '100%',
+                aspectRatio: "1/1",
+                height: "auto",
+                position: "relative",
+                width: "100%",
               }}
             >
               <Image
@@ -139,7 +173,7 @@ const TxtViewer = ({
                 alt="Generated Image"
                 fill
                 priority
-                style={{ borderRadius: '1rem', objectFit: 'cover' }}
+                style={{ borderRadius: "1rem", objectFit: "cover" }}
               />
             </Box>
           ) : (
@@ -152,44 +186,64 @@ const TxtViewer = ({
           )}
         </Grid>
       </Grid>
-      <Stack spacing={3} direction="column" justifyContent="center" alignItems="center">
-      <Pagination
-        count={pageCount}
-        page={currentPage + 1}
-        variant="outlined"
-        siblingCount={1}
-        onChange={handlePageChange}
-      />
-      <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap">
-        <TextField
-          id="jumpPage"
-          label="Jump to Page"
-          type="number"
+      <Stack
+        spacing={3}
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Pagination
+          count={pageCount}
+          page={currentPage + 1}
           variant="outlined"
-          size="small"
-          value={pageInput + 1}
-          onChange={(e) => setPageInput(parseInt(e.target.value) - 1)}
-          style={{ width: 200 }}
+          siblingCount={1}
+          onChange={handlePageChange}
         />
-        <Button
-          variant="outlined"
-          onClick={handleJumpPage}
-          style={{ borderRadius: 20, color: "black", borderColor: "black"}}
+        <Stack
+          spacing={{ xs: 1, sm: 2 }}
+          direction="row"
+          useFlexGap
+          flexWrap="wrap"
         >
-          Jump
-        </Button>
-      </Stack>
-      <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap">
-        <Button
-          style={{ borderRadius: 20, width: '150px', color: "black", borderColor: "black"}}
-          variant="outlined"
-          onClick={() => {
-            setFileText("");
-            setInputText("");
-          }}
+          <TextField
+            id="jumpPage"
+            label="Jump to Page"
+            type="number"
+            variant="outlined"
+            size="small"
+            value={pageInput + 1}
+            onChange={(e) => setPageInput(parseInt(e.target.value) - 1)}
+            style={{ width: 200 }}
+          />
+          <Button
+            variant="outlined"
+            onClick={handleJumpPage}
+            style={{ borderRadius: 20, color: "black", borderColor: "black" }}
           >
-          Go Back
-        </Button>
+            Jump
+          </Button>
+        </Stack>
+        <Stack
+          spacing={{ xs: 1, sm: 2 }}
+          direction="row"
+          useFlexGap
+          flexWrap="wrap"
+        >
+          <Button
+            style={{
+              borderRadius: 20,
+              width: "150px",
+              color: "black",
+              borderColor: "black",
+            }}
+            variant="outlined"
+            onClick={() => {
+              setFileText("");
+              setInputText("");
+            }}
+          >
+            Go Back
+          </Button>
         </Stack>
       </Stack>
     </>

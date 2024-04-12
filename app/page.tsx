@@ -17,14 +17,12 @@ import EPubViewer from "@/components/molecules/epubViewer";
 import Image from "next/image";
 
 const L2i = () => {
-  const [file, setFile] = useState<File | null>(null);
   const [fileText, setFileText] = useState<string>("");
   const [inputText, setInputText] = useState<string>("");
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-      setFile(file);
 
       if (file) {
         const reader = new FileReader();
