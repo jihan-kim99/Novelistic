@@ -117,17 +117,17 @@ const L2i = () => {
             textAlign="start"
             marginTop='50px'
             >
-            소설 텍스트 복사하여 붙여넣기
+            소설 텍스트로 시작
           </Typography>
           <TextField
             value= {inputText}
             fullWidth
             variant="outlined"
-            placeholder="소설 본문을 복사하여 붙여넣어주세요."
+            placeholder="소설 본문을 입력해 주세요."
             multiline
             rows={10}
             maxRows={10}
-            onChange={(e) => setInputText(e.target.value)}
+            onBlur={(e) => setInputText(e.target.value)}
             sx={{ mt: '50px' }}
           />
           <Button
