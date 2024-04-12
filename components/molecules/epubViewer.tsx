@@ -213,6 +213,11 @@ const TxtViewer = ({
             size="small"
             value={pageInput + 1}
             onChange={(e) => setPageInput(parseInt(e.target.value) - 1)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleJumpPage();
+              }
+            }}
             style={{ width: 200 }}
           />
           <Button
