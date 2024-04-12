@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Button, Container, TextField, Toolbar, Typography } from "@mui/material";
+import { Box, Button, Container, IconButton, TextField, Toolbar, Typography } from "@mui/material";
+
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 import EPubViewer from "@/components/molecules/epubViewer";
@@ -100,12 +102,12 @@ const L2i = () => {
           </Box>
         <Box display="flex" justifyContent="start" alignItems="start">
         <Button
-        component="label"
-        role={undefined}
-           variant="outlined"
-           tabIndex={-1}
-           startIcon={<CloudUploadIcon />}
-           style={{ borderRadius: 20, width: 200, marginTop: "50px", color: "black", borderColor: "black" }}
+          component="label"
+          role={"upload-button"}
+          variant="outlined"
+          tabIndex={-1}
+          startIcon={<CloudUploadIcon />}
+          style={{ borderRadius: 20, width: 200, marginTop: "50px", color: "black", borderColor: "black" }}
          >
            업로드 버튼
            <input type="file" hidden onChange={handleFileChange} />
@@ -132,6 +134,8 @@ const L2i = () => {
           />
           <Button
             variant="outlined"
+            role="start-button"
+            startIcon={<AutoStoriesIcon />}
             style={{ borderRadius: 20, width: 200, marginTop: "50px", color: "black", borderColor: "black" }}
             onClick={() => setFileText(inputText)}
           >
