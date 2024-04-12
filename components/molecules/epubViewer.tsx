@@ -12,6 +12,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import Lottie from "react-lottie-player";
 
 import loadingJson from "@/components/atom/loading.json";
+import TextLayoutMenu from "../atom/textLayoutMenu";
 
 const TxtViewer = ({
   fileText,
@@ -26,6 +27,8 @@ const TxtViewer = ({
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [description, setDescription] = useState<string>("");
   const [pageInput, setPageInput] = useState<number>(currentPage);
+  const [fontSize, setFontSize] = useState<number>(16);
+  const [lineSpace, setLineSpace] = useState<number>(1);
 
   const fileInLine = fileText.split("\n");
   const pageSize = 100;
@@ -133,15 +136,22 @@ const TxtViewer = ({
 
   return (
     <>
+      <Box width="100%" display='flex' justifyContent='flex-end'>
+        <TextLayoutMenu 
+          fontSize={fontSize}
+          setFontSize={setFontSize}
+          lineSpace={lineSpace}
+          setLineSpace={setLineSpace}
+        />
+      </Box>
       <Grid container justifyContent="center" alignItems="center">
-        <Grid item lg={6} xs={12} flex={1} flexWrap="wrap">
+        <Grid item lg={6} xs={12} flex={1} marginTop={5} flexWrap="wrap">
           {currentPageText.map((line, index) => (
             <Typography
               key={index}
-              variant="body1"
+              marginTop={lineSpace}
+              fontSize={fontSize}
               textAlign="start"
-              margin={{ lg: 5, xs: 0 }}
-              marginTop={{ lg: 5, xs: 2 }}
             >
               {line}
             </Typography>

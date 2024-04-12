@@ -4,7 +4,6 @@ import { useState } from "react";
 import {
   Box,
   Button,
-  IconButton,
   Stack,
   TextField,
   Toolbar,
@@ -19,6 +18,7 @@ import Image from "next/image";
 const L2i = () => {
   const [fileText, setFileText] = useState<string>("");
   const [inputText, setInputText] = useState<string>("");
+
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -38,7 +38,7 @@ const L2i = () => {
   };
 
   return (
-    <Box component="main" sx={{ flexGrow: 1 }}>
+    <Box component="main" sx={{ flexGrow: 1, marginBottom: 5 }}>
       <Toolbar>
         <Stack
           direction="row"

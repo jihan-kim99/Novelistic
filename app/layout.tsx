@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
+import { CssBaseline } from '@mui/material';
+
+import { pretendard, pretendardVariable } from '@/styles/font';
+import GlobalStyle from '@/styles/GlobalStyle';
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://novelistic.site"),
@@ -25,13 +29,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
+    <html lang="ko"  className={`${pretendardVariable.className} ${pretendard.className}`}>
+      <head />
         <body>
+          <CssBaseline />
+          <GlobalStyle />
           {children}
           <Analytics />
         </body>
-      </head>
     </html>
   );
 }
