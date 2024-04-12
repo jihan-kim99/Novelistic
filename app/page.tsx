@@ -38,7 +38,7 @@ const L2i = () => {
   };
 
   return (
-    <Box component="main" sx={{ flexGrow: 1, marginBottom: 5 }}>
+    <Box component="main" sx={{ flexGrow: 1, margin: '20px' }}>
       <Toolbar>
         <Stack
           direction="row"
