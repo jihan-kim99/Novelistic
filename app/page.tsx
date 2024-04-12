@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   Box,
   Button,
+  IconButton,
   Stack,
   TextField,
   Toolbar,
@@ -41,9 +42,18 @@ const L2i = () => {
   return (
     <Box component="main" sx={{ flexGrow: 1 }}>
       <Toolbar>
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack
+          direction="row"
+          spacing={0}
+          alignItems="center"
+          justifyContent="start"
+        >
           <Image src="/icon.svg" alt="logo" width={80} height={80} />
-          <Typography variant="h2" fontWeight="bold" component="div">
+          <Typography
+            fontSize={{ lg: "64px", xs: "36px" }}
+            fontWeight="bold"
+            component="div"
+          >
             Novelistic
           </Typography>
         </Stack>
@@ -64,7 +74,11 @@ const L2i = () => {
               width: "100%",
             }}
           >
-            <Typography fontSize={40} fontWeight="bold" mt="50px">
+            <Typography
+              fontSize={{ lg: "48px", xs: "24px" }}
+              fontWeight="bold"
+              mt="50px"
+            >
               택본 업로드 (pc 사용을 권장합니다)
             </Typography>
           </Box>
@@ -89,7 +103,7 @@ const L2i = () => {
           </Box>
           <Box width={{ md: "70%", xs: "100%" }} sx={{ mt: "50px" }}>
             <Typography
-              fontSize={40}
+              fontSize={{ lg: "48px", xs: "24px" }}
               fontWeight="bold"
               textAlign="start"
               marginTop="50px"
