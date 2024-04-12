@@ -8,9 +8,11 @@ import loadingJson from "@/components/atom/loading.json";
 const TxtViewer = ({
   fileText,
   setFileText,
+  setInputText
 }: {
   fileText: string;
   setFileText: (text: string) => void;
+  setInputText: (text: string) => void;
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -18,7 +20,7 @@ const TxtViewer = ({
   const [pageInput, setPageInput] = useState<number>(currentPage);
 
   const fileInLine = fileText.split("\n");
-  const pageSize = 50;
+  const pageSize = 100;
 
   
   const pageCount = Math.ceil(fileInLine.length / pageSize);
@@ -28,6 +30,7 @@ const TxtViewer = ({
 
   const handlePageChange = (event: ChangeEvent<unknown>, value: number) => {
     setCurrentPage(value - 1);
+    setPageInput(value -1);
     setImageUrl(null);
     scrollToTop();
     handleAskAI();
@@ -122,7 +125,8 @@ const TxtViewer = ({
         >
           {imageUrl ? (
             <Box 
-              margin={{lg: 4, xs: 0}}  
+              margin={{lg: 4, xs: 0}}
+              marginBlockEnd={{lg: 4, xs: 4}} 
               sx={{
                 aspectRatio: '1/1',
                 height: 'auto',
@@ -181,6 +185,7 @@ const TxtViewer = ({
           variant="outlined"
           onClick={() => {
             setFileText("");
+            setInputText("");
           }}
           >
           Go Back

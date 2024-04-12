@@ -126,8 +126,7 @@ const L2i = () => {
             placeholder="소설 본문을 입력해 주세요."
             multiline
             rows={10}
-            maxRows={10}
-            onBlur={(e) => setInputText(e.target.value)}
+            onChange={(e) => setInputText(e.target.value)}
             sx={{ mt: '50px' }}
           />
           <Button
