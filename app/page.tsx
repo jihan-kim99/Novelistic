@@ -82,6 +82,7 @@ const L2i = () => {
         <EPubViewer
           fileText={fileText}
           setFileText={setFileText}
+          setInputText={setInputText}
         />
       ) : (
         <Box padding="0 20px 0 20px" marginBlockEnd='50px'>
