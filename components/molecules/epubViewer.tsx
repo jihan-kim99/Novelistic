@@ -24,7 +24,7 @@ const TxtViewer = ({
   setInputText: (text: string) => void;
 }) => {
   const [currentPage, setCurrentPage] = useState(-1);
-  const [imageUrl, setImageUrl] = useState<string | null>('/icon.png');
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [description, setDescription] = useState<string>("");
   const [pageInput, setPageInput] = useState<number>(currentPage);
   const [fontSize, setFontSize] = useState<number>(16);
@@ -78,7 +78,9 @@ const TxtViewer = ({
       console.log("success fetch");
       const data = await res.json();
       console.log(data.image.length);
-      setImageUrl(`data:image/png;base64,${data.image}`);
+      currentPage === -1
+        ? setImageUrl("/ready.png")
+        : setImageUrl(`data:image/png;base64,${data.image}`);
     } catch (error) {
       console.log("failed");
       setImageUrl("/error.png");
@@ -127,10 +129,16 @@ const TxtViewer = ({
     };
   }, [currentPage, handleAskAI]);
 
+  useEffect(() => {
+    if (currentPage === -1) {
+      handleAskAI();
+    }
+  }, []);
+
   return (
     <>
-      <Box width="100%" display='flex' justifyContent='flex-end'>
-        <TextLayoutMenu 
+      <Box width="100%" display="flex" justifyContent="flex-end">
+        <TextLayoutMenu
           fontSize={fontSize}
           setFontSize={setFontSize}
           lineSpace={lineSpace}
