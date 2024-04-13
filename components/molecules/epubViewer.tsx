@@ -29,6 +29,7 @@ const TxtViewer = ({
   const [pageInput, setPageInput] = useState<number>(currentPage);
   const [fontSize, setFontSize] = useState<number>(16);
   const [lineSpace, setLineSpace] = useState<number>(1);
+  const [isFirstPage, setIsFirstPage] = useState<boolean>(true);
 
   const fileInLine = fileText.split("\n");
   const pageSize = 100;
@@ -48,6 +49,7 @@ const TxtViewer = ({
 
   const handleJumpPage = () => {
     setCurrentPage(pageInput);
+    console.log("jumpted to: ", currentPage);
     setImageUrl(null);
     scrollToTop();
     handleAskAI();
@@ -78,14 +80,14 @@ const TxtViewer = ({
       console.log("success fetch");
       const data = await res.json();
       console.log(data.image.length);
-      currentPage === -1
-        ? setImageUrl("/ready.png")
+      isFirstPage
+        ? (setImageUrl("/ready.png"), setIsFirstPage(false))
         : setImageUrl(`data:image/png;base64,${data.image}`);
     } catch (error) {
       console.log("failed");
       setImageUrl("/error.png");
     }
-  }, [description]);
+  }, [description, isFirstPage]);
 
   const handleAskAI = useCallback(async () => {
     const res = await fetch("/api/askAI", {
@@ -130,7 +132,7 @@ const TxtViewer = ({
   }, [currentPage, handleAskAI]);
 
   useEffect(() => {
-    if (currentPage === -1) {
+    if (isFirstPage) {
       handleAskAI();
     }
   }, []);
