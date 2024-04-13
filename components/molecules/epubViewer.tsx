@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import Image from "next/image";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, use, useCallback, useEffect, useState } from "react";
 import Lottie from "react-lottie-player";
 
 import loadingJson from "@/components/atom/loading.json";
@@ -23,8 +23,8 @@ const TxtViewer = ({
   setFileText: (text: string) => void;
   setInputText: (text: string) => void;
 }) => {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(-1);
+  const [imageUrl, setImageUrl] = useState<string | null>('/icon.png');
   const [description, setDescription] = useState<string>("");
   const [pageInput, setPageInput] = useState<number>(currentPage);
   const [fontSize, setFontSize] = useState<number>(16);
@@ -53,35 +53,6 @@ const TxtViewer = ({
     handleAskAI();
   };
 
-  useEffect(() => {
-    scrollToTop();
-    handleAskAI();
-  }, [fileText]);
-
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      const prevPageInput = currentPage;
-      console.log(prevPageInput);
-      if (event.key === "ArrowLeft") {
-        setCurrentPage((prevPageInput) => prevPageInput - 1);
-        setPageInput((pageInput) => pageInput - 1);
-        scrollToTop();
-        handleAskAI();
-      } else if (event.key === "ArrowRight") {
-        setCurrentPage((prevPageInput) => prevPageInput + 1);
-        setPageInput((pageInput) => pageInput + 1);
-        scrollToTop();
-        handleAskAI();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyPress);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [currentPage]);
-
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -89,27 +60,7 @@ const TxtViewer = ({
     });
   };
 
-  const handleAskAI = async () => {
-    const res = await fetch("/api/askAI", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt: currentPageText.join("\n"),
-      }),
-    });
-    const data = await res.json();
-    const imageDesc = JSON.parse(data.text.message.content);
-    if (imageDesc.isImage) {
-      setImageUrl(null);
-      console.debug(imageDesc.description);
-      setDescription(imageDesc.description);
-      generateImage();
-    }
-  };
-
-  const generateImage = async () => {
+  const generateImage = useCallback(async () => {
     console.log("generateImage");
     try {
       const res = await fetch(
@@ -132,7 +83,49 @@ const TxtViewer = ({
       console.log("failed");
       setImageUrl("/error.png");
     }
-  };
+  }, [description]);
+
+  const handleAskAI = useCallback(async () => {
+    const res = await fetch("/api/askAI", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: currentPageText.join("\n"),
+      }),
+    });
+    const data = await res.json();
+    const imageDesc = JSON.parse(data.text.message.content);
+    if (imageDesc.isImage) {
+      setImageUrl(null);
+      console.debug(imageDesc.description);
+      setDescription(imageDesc.description);
+      generateImage();
+    }
+  }, [currentPageText, generateImage]);
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      const prevPageInput = currentPage;
+      console.log(prevPageInput);
+      if (event.key === "ArrowLeft") {
+        setCurrentPage((prevPageInput) => prevPageInput - 1);
+        setPageInput((pageInput) => pageInput - 1);
+        scrollToTop();
+        handleAskAI();
+      } else if (event.key === "ArrowRight") {
+        setCurrentPage((prevPageInput) => prevPageInput + 1);
+        setPageInput((pageInput) => pageInput + 1);
+        scrollToTop();
+        handleAskAI();
+      }
+    };
+    document.addEventListener("keydown", handleKeyPress);
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [currentPage, handleAskAI]);
 
   return (
     <>
