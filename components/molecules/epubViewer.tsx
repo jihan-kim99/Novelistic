@@ -44,15 +44,12 @@ const TxtViewer = ({
     setPageInput(value - 1);
     setImageUrl(null);
     scrollToTop();
-    handleAskAI();
   };
 
   const handleJumpPage = () => {
     setCurrentPage(pageInput);
-    console.log("jumpted to: ", currentPage);
     setImageUrl(null);
     scrollToTop();
-    handleAskAI();
   };
 
   const scrollToTop = () => {
@@ -63,7 +60,6 @@ const TxtViewer = ({
   };
 
   const generateImage = useCallback(async () => {
-    console.log("generateImage");
     try {
       const res = await fetch(
         "https://asia-northeast1-chatbot-32ff4.cloudfunctions.net/novelistic/generateImage",
@@ -77,59 +73,57 @@ const TxtViewer = ({
           }),
         }
       );
-      console.log("success fetch");
       const data = await res.json();
-      console.log(data.image.length);
       isFirstPage
         ? (setImageUrl("/ready.png"), setIsFirstPage(false))
         : setImageUrl(`data:image/png;base64,${data.image}`);
     } catch (error) {
-      console.log("failed");
       setImageUrl("/error.png");
     }
   }, [description, isFirstPage]);
 
   const handleAskAI = useCallback(async () => {
+    const prompt = currentPageText.join("\n");
     const res = await fetch("/api/askAI", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        prompt: currentPageText.join("\n"),
+        prompt: prompt,
       }),
     });
     const data = await res.json();
     const imageDesc = JSON.parse(data.text.message.content);
     if (imageDesc.isImage) {
       setImageUrl(null);
-      console.debug(imageDesc.description);
       setDescription(imageDesc.description);
       generateImage();
     }
   }, [currentPageText, generateImage]);
 
   useEffect(() => {
+    handleAskAI();
+  }, [currentPage]);
+
+  useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       const prevPageInput = currentPage;
-      console.log(prevPageInput);
       if (event.key === "ArrowLeft") {
         setCurrentPage((prevPageInput) => prevPageInput - 1);
         setPageInput((pageInput) => pageInput - 1);
         scrollToTop();
-        handleAskAI();
       } else if (event.key === "ArrowRight") {
         setCurrentPage((prevPageInput) => prevPageInput + 1);
         setPageInput((pageInput) => pageInput + 1);
         scrollToTop();
-        handleAskAI();
       }
     };
     document.addEventListener("keydown", handleKeyPress);
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
     };
-  }, [currentPage, handleAskAI]);
+  }, [currentPage]);
 
   useEffect(() => {
     if (isFirstPage) {
