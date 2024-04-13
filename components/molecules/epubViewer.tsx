@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import Image from "next/image";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import Lottie from "react-lottie-player";
 
 import loadingJson from "@/components/atom/loading.json";
@@ -30,9 +30,12 @@ const TxtViewer = ({
   const [fontSize, setFontSize] = useState<number>(16);
   const [lineSpace, setLineSpace] = useState<number>(1);
   const [isFirstPage, setIsFirstPage] = useState<boolean>(true);
+  const firstUpdate1 = useRef(true);
+  const firstUpdate2 = useRef(true);
+  const firstUpdate3 = useRef(true);
 
-  const fileInLine = fileText.split("\n");
-  const pageSize = 100;
+  const fileInLine = fileText.split("\n").filter((line) => line.trim() !== "");
+  const pageSize = 50;
 
   const pageCount = Math.ceil(fileInLine.length / pageSize);
   const startIndex = currentPage * pageSize;
@@ -61,6 +64,7 @@ const TxtViewer = ({
 
   const generateImage = useCallback(async () => {
     try {
+      console.log(description);
       const res = await fetch(
         "https://asia-northeast1-chatbot-32ff4.cloudfunctions.net/novelistic/generateImage",
         {
@@ -74,8 +78,9 @@ const TxtViewer = ({
         }
       );
       const data = await res.json();
-      isFirstPage
-        ? (setImageUrl("/ready.png"), setIsFirstPage(false))
+      console.log(firstUpdate3.current);
+      firstUpdate3.current
+        ? (setImageUrl("/ready.png"), (firstUpdate3.current = false))
         : setImageUrl(`data:image/png;base64,${data.image}`);
     } catch (error) {
       setImageUrl("/error.png");
@@ -98,14 +103,28 @@ const TxtViewer = ({
     const imageDesc = JSON.parse(data.text.message.content);
     if (imageDesc.isImage) {
       setImageUrl(null);
+      console.log(imageDesc.description);
       setDescription(imageDesc.description);
-      generateImage();
     }
-  }, [currentPageText, generateImage]);
+  }, [currentPageText]);
 
   useEffect(() => {
+    if (firstUpdate1.current) {
+      firstUpdate1.current = false;
+      return;
+    }
+
     handleAskAI();
   }, [currentPage]);
+
+  useEffect(() => {
+    if (firstUpdate2.current) {
+      firstUpdate2.current = false;
+      return;
+    }
+
+    generateImage();
+  }, [description]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -125,12 +144,6 @@ const TxtViewer = ({
       document.removeEventListener("keydown", handleKeyPress);
     };
   }, [currentPage]);
-
-  useEffect(() => {
-    if (isFirstPage) {
-      handleAskAI();
-    }
-  }, []);
 
   return (
     <>
