@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import Image from "next/image";
-import { ChangeEvent, use, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import Lottie from "react-lottie-player";
 
 import loadingJson from "@/components/atom/loading.json";
@@ -84,6 +84,7 @@ const TxtViewer = ({
 
   const handleAskAI = useCallback(async () => {
     const prompt = currentPageText.join("\n");
+    console.log(currentPageText);
     const res = await fetch("/api/askAI", {
       method: "POST",
       headers: {
