@@ -18,10 +18,16 @@ const TxtViewer = ({
   fileText,
   setFileText,
   setInputText,
+  firstUpdate1,
+  firstUpdate2,
+  firstUpdate3,
 }: {
   fileText: string;
   setFileText: (text: string) => void;
   setInputText: (text: string) => void;
+  firstUpdate1: React.MutableRefObject<boolean>;
+  firstUpdate2: React.MutableRefObject<boolean>;
+  firstUpdate3: React.MutableRefObject<boolean>;
 }) => {
   const [currentPage, setCurrentPage] = useState(-1);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -29,10 +35,7 @@ const TxtViewer = ({
   const [pageInput, setPageInput] = useState<number>(currentPage);
   const [fontSize, setFontSize] = useState<number>(16);
   const [lineSpace, setLineSpace] = useState<number>(1);
-  const [isFirstPage, setIsFirstPage] = useState<boolean>(true);
-  const firstUpdate1 = useRef(true);
-  const firstUpdate2 = useRef(true);
-  const firstUpdate3 = useRef(true);
+
 
   const fileInLine = fileText.split("\n").filter((line) => line.trim() !== "");
   const pageSize = 50;
@@ -89,7 +92,7 @@ const TxtViewer = ({
     } catch (error) {
       setImageUrl("/error.png");
     }
-  }, [description, isFirstPage]);
+  }, [description]);
 
   const handleAskAI = useCallback(async () => {
     const prompt = currentPageText.join("\n");
@@ -114,6 +117,7 @@ const TxtViewer = ({
 
   useEffect(() => {
     if (firstUpdate1.current) {
+      console.log('firstUpdate1')
       firstUpdate1.current = false;
       return;
     }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -18,6 +18,15 @@ import Image from "next/image";
 const L2i = () => {
   const [fileText, setFileText] = useState<string>("");
   const [inputText, setInputText] = useState<string>("");
+  const firstUpdate1 = useRef(true);
+  const firstUpdate2 = useRef(true);
+  const firstUpdate3 = useRef(true);
+
+  useEffect(() => {
+    firstUpdate1.current = true;
+    firstUpdate2.current = true;
+    firstUpdate3.current = true;
+  }, [fileText]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -60,6 +69,9 @@ const L2i = () => {
           fileText={fileText}
           setFileText={setFileText}
           setInputText={setInputText}
+          firstUpdate1={firstUpdate1}
+          firstUpdate2={firstUpdate2}
+          firstUpdate3={firstUpdate3}
         />
       ) : (
         <Box padding="0 20px 0 20px" marginBlockEnd="50px">
