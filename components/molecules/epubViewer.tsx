@@ -117,22 +117,26 @@ const TxtViewer = ({
 
   useEffect(() => {
     if (firstUpdate1.current) {
-      handleAskAI();
       console.log('firstUpdate1')
       firstUpdate1.current = false;
       return;
     }
+
     handleAskAI();
   }, [currentPage]);
 
   useEffect(() => {
     if (firstUpdate2.current) {
-      generateImage();
       firstUpdate2.current = false;
       return;
     }
+
     generateImage();
   }, [description]);
+
+  useEffect(() => {
+    generateImage();
+  }, []);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
