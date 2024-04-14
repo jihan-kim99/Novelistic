@@ -19,7 +19,6 @@ const L2i = () => {
   const [fileText, setFileText] = useState<string>("");
   const [inputText, setInputText] = useState<string>("");
 
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
@@ -38,7 +37,7 @@ const L2i = () => {
   };
 
   return (
-    <Box component="main" sx={{ flexGrow: 1, margin: '20px' }}>
+    <Box component="main" sx={{ flexGrow: 1, margin: "20px" }}>
       <Toolbar>
         <Stack
           direction="row"

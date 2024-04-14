@@ -78,6 +78,10 @@ const TxtViewer = ({
         }
       );
       const data = await res.json();
+      if (data.image.length < 1000) {
+        console.log(data.image.length);
+        throw new Error("Image generation failed");
+      }
       console.log(firstUpdate3.current);
       firstUpdate3.current
         ? (setImageUrl("/ready.png"), (firstUpdate3.current = false))
