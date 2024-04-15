@@ -41,12 +41,20 @@ const TxtViewer = ({
     setImageUrl(null);
   };
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
-  };
+  const scrollToTop = useCallback(() => {
+    console.log('scrolling to top');
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    }, 100); // Adjust delay as needed
+  }, []);
+
+  useEffect(() => {
+    console.log('called scrolltotop');
+    scrollToTop();
+  }, [currentPage, scrollToTop]);
 
   const generateImage = useCallback(async () => {
     try {
@@ -107,10 +115,6 @@ const TxtViewer = ({
     console.log('gen from useEffect');
     generateImage();
   }, [description, generateImage]);
-
-  useEffect(() => {
-    scrollToTop();
-  }, [currentPage]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
