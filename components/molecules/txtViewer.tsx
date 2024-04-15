@@ -1,6 +1,6 @@
 import { Box, Button, Grid, Pagination, Stack, TextField, Typography } from '@mui/material';
 import Image from 'next/image';
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import Lottie from 'react-lottie-player';
 
 import loadingJson from '@/components/atom/loading.json';
@@ -43,12 +43,10 @@ const TxtViewer = ({
 
   const scrollToTop = useCallback(() => {
     console.log('scrolling to top');
-    setTimeout(() => {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      });
-    }, 100); // Adjust delay as needed
+    window.scrollTo({
+      top: 0,
+      behavior: 'instant',
+    });
   }, []);
 
   useEffect(() => {
