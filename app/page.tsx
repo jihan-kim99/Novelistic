@@ -91,6 +91,20 @@ const L2i = () => {
               <input type="file" hidden onChange={handleFileChange} />
             </Button>
           </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'start',
+              alignItems: 'start',
+              width: '100%',
+              mt: '20px',
+            }}
+          >
+            <Typography>샘플 다운로드: </Typography>
+            <a href="/sampleTxt/위대한_개츠비.txt" download>
+              <Typography color="gray">위대한 개츠비.txt</Typography>
+            </a>
+          </Box>
           <Box width={{ md: '70%', xs: '100%' }} sx={{ mt: '50px' }}>
             <Typography fontSize={{ lg: '48px', xs: '24px' }} fontWeight="bold" textAlign="start" marginTop="50px">
               소설 텍스트로 시작
