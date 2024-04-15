@@ -25,8 +25,8 @@ export async function POST(req: NextRequest) {
           You have to draw the illustration in the format as below.
           When there is description of a character in the novel text, you have to draw the character in the illustration.
           the description of the scene or character that you will draw will be in the format of danbooru tags.
-          at the beginning of the tags, add one and only one really short sentence about the scene or character that you will draw.
           such as "blue hair", "sword fight", "magic", "monster", "turtle monster", etc.
+          You have to describe the photo you will draw in the tag format only.
           You will return the Json in the format as below:
           {isImage: True, description: ""}
           `,

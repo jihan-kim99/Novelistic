@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Box, Button, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import DetectFileEncodingAndLanguage from 'detect-file-encoding-and-language';
 
 import TxtViewer from '@/components/molecules/txtViewer';
 import Image from 'next/image';
@@ -21,11 +22,17 @@ const L2i = () => {
     firstUpdate3.current = true;
   }, [fileText]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
 
       if (file) {
+        if (file.type !== 'text/plain') {
+          console.error('Invalid file type. Only text files are allowed.');
+          return;
+        }
+        const result = await DetectFileEncodingAndLanguage(file);
+        const encoding = result.encoding;
         const reader = new FileReader();
         reader.onload = (event) => {
           if (event.target && event.target.result) {
@@ -33,7 +40,8 @@ const L2i = () => {
             setFileText(text);
           }
         };
-        reader.readAsText(file);
+        console.log(encoding);
+        reader.readAsText(file, encoding);
       }
     }
   };
