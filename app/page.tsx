@@ -38,6 +38,16 @@ const L2i = () => {
     }
   };
 
+  const handleExapleFiles = async (fileName: string) => {
+    try {
+      const response = await fetch(`/sampleTxt/${fileName}`);
+      const text = await response.text();
+      setFileText(text);
+    } catch (error) {
+      console.error('Error loading example file:', error);
+    }
+  };
+
   return (
     <Box
       component="main"
@@ -113,8 +123,18 @@ const L2i = () => {
             }}
           >
             <Typography>샘플 다운로드: </Typography>
-            <a href="/sampleTxt/위대한_개츠비.txt" download>
-              <Typography color="gray">위대한 개츠비.txt</Typography>
+            <a onClick={() => handleExapleFiles('위대한_개츠비.txt')}>
+              <Typography
+                color="gray"
+                sx={{
+                  '&:hover': {
+                    color: '#236',
+                    cursor: 'pointer',
+                  },
+                }}
+              >
+                위대한 개츠비.txt
+              </Typography>
             </a>
           </Box>
           <Box width={{ md: '70%', xs: '100%' }} sx={{ mt: '50px' }}>
