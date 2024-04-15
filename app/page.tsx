@@ -1,23 +1,16 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import {
-  Box,
-  Button,
-  Stack,
-  TextField,
-  Toolbar,
-  Typography,
-} from "@mui/material";
-import AutoStoriesIcon from "@mui/icons-material/AutoStories";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useEffect, useRef, useState } from 'react';
+import { Box, Button, Stack, TextField, Toolbar, Typography } from '@mui/material';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
-import EPubViewer from "@/components/molecules/epubViewer";
-import Image from "next/image";
+import EPubViewer from '@/components/molecules/epubViewer';
+import Image from 'next/image';
 
 const L2i = () => {
-  const [fileText, setFileText] = useState<string>("");
-  const [inputText, setInputText] = useState<string>("");
+  const [fileText, setFileText] = useState<string>('');
+  const [inputText, setInputText] = useState<string>('');
   const firstUpdate1 = useRef(true);
   const firstUpdate2 = useRef(true);
   const firstUpdate3 = useRef(true);
@@ -46,77 +39,52 @@ const L2i = () => {
   };
 
   return (
-    <Box component="main" sx={{ flexGrow: 1, margin: "20px" }}>
+    <Box component="main" sx={{ flexGrow: 1, margin: '20px' }}>
       <Toolbar>
-        <Stack
-          direction="row"
-          spacing={0}
-          alignItems="center"
-          justifyContent="start"
-        >
+        <Stack direction="row" spacing={0} alignItems="center" justifyContent="start">
           <Image src="/icon.svg" alt="logo" width={80} height={80} />
-          <Typography
-            fontSize={{ lg: "64px", xs: "36px" }}
-            fontWeight="bold"
-            component="div"
-          >
+          <Typography fontSize={{ lg: '64px', xs: '36px' }} fontWeight="bold" component="div">
             Novelistic
           </Typography>
         </Stack>
       </Toolbar>
       {fileText ? (
-        <EPubViewer
-          fileText={fileText}
-          setFileText={setFileText}
-          setInputText={setInputText}
-          firstUpdate1={firstUpdate1}
-          firstUpdate2={firstUpdate2}
-          firstUpdate3={firstUpdate3}
-        />
+        <EPubViewer fileText={fileText} setFileText={setFileText} setInputText={setInputText} />
       ) : (
         <Box padding="0 20px 0 20px" marginBlockEnd="50px">
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "start",
-              alignItems: "start",
-              width: "100%",
+              display: 'flex',
+              justifyContent: 'start',
+              alignItems: 'start',
+              width: '100%',
             }}
           >
-            <Typography
-              fontSize={{ lg: "48px", xs: "24px" }}
-              fontWeight="bold"
-              mt="50px"
-            >
+            <Typography fontSize={{ lg: '48px', xs: '24px' }} fontWeight="bold" mt="50px">
               택본 업로드 (pc 사용을 권장합니다)
             </Typography>
           </Box>
           <Box display="flex" justifyContent="start" alignItems="start">
             <Button
               component="label"
-              role={"upload-button"}
+              role={'upload-button'}
               variant="outlined"
               tabIndex={-1}
               startIcon={<CloudUploadIcon />}
               style={{
                 borderRadius: 20,
                 width: 200,
-                marginTop: "50px",
-                color: "black",
-                borderColor: "black",
+                marginTop: '50px',
+                color: 'black',
+                borderColor: 'black',
               }}
             >
               업로드 버튼
               <input type="file" hidden onChange={handleFileChange} />
             </Button>
           </Box>
-          <Box width={{ md: "70%", xs: "100%" }} sx={{ mt: "50px" }}>
-            <Typography
-              fontSize={{ lg: "48px", xs: "24px" }}
-              fontWeight="bold"
-              textAlign="start"
-              marginTop="50px"
-            >
+          <Box width={{ md: '70%', xs: '100%' }} sx={{ mt: '50px' }}>
+            <Typography fontSize={{ lg: '48px', xs: '24px' }} fontWeight="bold" textAlign="start" marginTop="50px">
               소설 텍스트로 시작
             </Typography>
             <TextField
@@ -127,7 +95,7 @@ const L2i = () => {
               multiline
               rows={10}
               onChange={(e) => setInputText(e.target.value)}
-              sx={{ mt: "50px" }}
+              sx={{ mt: '50px' }}
             />
             <Button
               variant="outlined"
@@ -136,9 +104,9 @@ const L2i = () => {
               style={{
                 borderRadius: 20,
                 width: 200,
-                marginTop: "50px",
-                color: "black",
-                borderColor: "black",
+                marginTop: '50px',
+                color: 'black',
+                borderColor: 'black',
               }}
               onClick={() => setFileText(inputText)}
             >
