@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Button, Stack, TextField, Toolbar, Typography } from '@mui/material';
+import { Box, Button, IconButton, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DetectFileEncodingAndLanguage from 'detect-file-encoding-and-language';
@@ -49,7 +49,12 @@ const L2i = () => {
     >
       <Toolbar>
         <Stack direction="row" spacing={0} alignItems="center" justifyContent="start">
-          <Image src="/icon.svg" alt="logo" width={80} height={80} />
+          <IconButton
+            style={{ backgroundColor: 'white', width: '80px', height: '80px' }}
+            onClick={() => setFileText('')}
+          >
+            <Image src="/icon.svg" alt="logo" fill style={{ objectFit: 'fill' }} />
+          </IconButton>
           <Typography fontSize={{ lg: '64px', xs: '36px' }} fontWeight="bold" component="div">
             Novelistic
           </Typography>

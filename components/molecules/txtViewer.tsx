@@ -142,11 +142,13 @@ const TxtViewer = ({
       const tags = [...defaultTags].join(', ') + ', ' + imageDesc.description;
       generateImage(tags);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   useEffect(() => {
     console.log('askAI from useEffect');
     handleAskAI();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   useEffect(() => {
