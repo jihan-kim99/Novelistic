@@ -34,13 +34,11 @@ const TxtViewer = ({
     setCurrentPage(value - 1);
     setPageInput(value - 1);
     setImageUrl(null);
-    scrollToTop();
   };
 
   const handleJumpPage = () => {
     setCurrentPage(pageInput);
     setImageUrl(null);
-    scrollToTop();
   };
 
   const scrollToTop = () => {
@@ -111,15 +109,17 @@ const TxtViewer = ({
   }, [description, generateImage]);
 
   useEffect(() => {
+    scrollToTop();
+  }, [currentPage]);
+
+  useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === 'ArrowLeft') {
         setCurrentPage((prevPageInput) => prevPageInput - 1);
         setPageInput((pageInput) => pageInput - 1);
-        scrollToTop();
       } else if (event.key === 'ArrowRight') {
         setCurrentPage((prevPageInput) => prevPageInput + 1);
         setPageInput((pageInput) => pageInput + 1);
-        scrollToTop();
       }
     };
     document.addEventListener('keydown', handleKeyPress);
