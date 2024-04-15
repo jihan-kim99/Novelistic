@@ -5,7 +5,7 @@ import { Box, Button, Stack, TextField, Toolbar, Typography } from '@mui/materia
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
-import EPubViewer from '@/components/molecules/epubViewer';
+import TxtViewer from '@/components/molecules/txtViewer';
 import Image from 'next/image';
 
 const L2i = () => {
@@ -49,7 +49,7 @@ const L2i = () => {
         </Stack>
       </Toolbar>
       {fileText ? (
-        <EPubViewer fileText={fileText} setFileText={setFileText} setInputText={setInputText} />
+        <TxtViewer fileText={fileText} setFileText={setFileText} setInputText={setInputText} />
       ) : (
         <Box padding="0 20px 0 20px" marginBlockEnd="50px">
           <Box
