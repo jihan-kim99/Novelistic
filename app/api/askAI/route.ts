@@ -25,7 +25,8 @@ export async function POST(req: NextRequest) {
           You will return in json format with the key of "isImage" and "description".
           {isImage: True, description: "tags"}
           the description of the scene or character that you will draw will be in the format of tags, comma separate string.
-          NEVER use actual name of the character or scene, only use tags like 1girl, 1boy, 2girls, 2boys, 3girls, 3boys, etc.
+          NEVER use actual name of the character, only use tags like 1girl, 1boy etc.
+          No not describe the scene, instead use tags.
           such as "blue hair", "sword fight", "magic", "monster", "turtle monster", etc.
           This tags always be english words.
           `,
