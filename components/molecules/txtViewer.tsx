@@ -4,18 +4,23 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import Lottie from 'react-lottie-player';
 
 import loadingJson from '@/components/atom/loading.json';
-import TextLayoutMenu from '../atom/textLayoutMenu';
+import TextLayoutMenu from '@/components/atom/textLayoutMenu';
+import { defaultTags } from '@/utils/defaultTags';
 
 const TxtViewer = ({
   fileText,
+  lightMode,
   setFileText,
   setInputText,
+  setLightMode,
 }: {
   fileText: string;
+  lightMode: boolean;
   setFileText: (text: string) => void;
   setInputText: (text: string) => void;
+  setLightMode: (mode: boolean) => void;
 }) => {
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(-1);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [description, setDescription] = useState<string>('');
   const [pageInput, setPageInput] = useState<number>(currentPage);
@@ -70,7 +75,7 @@ const TxtViewer = ({
       const data = await res.json();
       console.log(data.image.length);
 
-      if (data.image.length < 1000) {
+      if (data.image.length < 10000) {
         throw new Error('Image generation failed');
       }
       currentPage === -1 ? setImageUrl('/ready.png') : setImageUrl(`data:image/png;base64,${data.image}`);
@@ -99,8 +104,8 @@ const TxtViewer = ({
     const imageDesc = JSON.parse(data.text.message.content);
     if (imageDesc.isImage) {
       setImageUrl(null);
-      console.log('AI asked', imageDesc.description);
-      setDescription(imageDesc.description);
+      const tags = [...defaultTags].join(', ') + ', ' + imageDesc.description;
+      setDescription(tags);
     }
   }, [currentPage]);
 
@@ -138,10 +143,12 @@ const TxtViewer = ({
           setFontSize={setFontSize}
           lineSpace={lineSpace}
           setLineSpace={setLineSpace}
+          lightMode={lightMode}
+          setLightMode={setLightMode}
         />
       </Box>
       <Grid container justifyContent="center" alignItems="center">
-        <Grid item lg={6} xs={12} flex={1} marginTop={5} flexWrap="wrap">
+        <Grid item lg={6} xs={12} flex={1} marginTop={5} marginBottom={5} flexWrap="wrap">
           {currentPageText.map((line, index) => (
             <Typography key={index} marginTop={lineSpace} fontSize={fontSize} textAlign="start">
               {line}
@@ -209,7 +216,11 @@ const TxtViewer = ({
           <Button
             variant="outlined"
             onClick={handleJumpPage}
-            style={{ borderRadius: 20, color: 'black', borderColor: 'black' }}
+            style={{
+              borderRadius: 20,
+              color: lightMode ? 'black' : 'white',
+              borderColor: lightMode ? 'black' : 'white',
+            }}
           >
             Jump
           </Button>
@@ -219,8 +230,8 @@ const TxtViewer = ({
             style={{
               borderRadius: 20,
               width: '150px',
-              color: 'black',
-              borderColor: 'black',
+              color: lightMode ? 'black' : 'white',
+              borderColor: lightMode ? 'black' : 'white',
             }}
             variant="outlined"
             onClick={() => {

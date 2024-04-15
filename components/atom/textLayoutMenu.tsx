@@ -6,11 +6,15 @@ export default function TextLayoutMenu({
   setFontSize,
   lineSpace,
   setLineSpace,
+  lightMode,
+  setLightMode,
 }: {
   fontSize: number;
   setFontSize: (fontSize: number) => void;
   lineSpace: number;
   setLineSpace: (lineSpace: number) => void;
+  lightMode: boolean;
+  setLightMode: (mode: boolean) => void;
 }) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -30,7 +34,12 @@ export default function TextLayoutMenu({
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
         variant="outlined"
-        style={{ borderRadius: 20, marginRight: 40, color: 'black', borderColor: 'black' }}
+        style={{
+          borderRadius: 20,
+          marginRight: 40,
+          color: lightMode ? 'black' : 'white',
+          borderColor: lightMode ? 'black' : 'white',
+        }}
       >
         설정
       </Button>
@@ -73,6 +82,19 @@ export default function TextLayoutMenu({
             <MenuItem value={2}>2</MenuItem>
             <MenuItem value={2.5}>2.5</MenuItem>
             <MenuItem value={3}>3</MenuItem>
+          </Select>
+        </MenuItem>
+        <MenuItem>
+          <Typography marginRight={2}>모드</Typography>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={lightMode ? 'light' : 'dark'}
+            onChange={(e) => setLightMode(e.target.value === 'light' ? true : false)}
+            size="small"
+          >
+            <MenuItem value="light">라이트</MenuItem>
+            <MenuItem value="dark">다크</MenuItem>
           </Select>
         </MenuItem>
       </Menu>

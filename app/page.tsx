@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Box, Button, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -12,15 +12,7 @@ import Image from 'next/image';
 const L2i = () => {
   const [fileText, setFileText] = useState<string>('');
   const [inputText, setInputText] = useState<string>('');
-  const firstUpdate1 = useRef(true);
-  const firstUpdate2 = useRef(true);
-  const firstUpdate3 = useRef(true);
-
-  useEffect(() => {
-    firstUpdate1.current = true;
-    firstUpdate2.current = true;
-    firstUpdate3.current = true;
-  }, [fileText]);
+  const [lightMode, setLightMode] = useState<boolean>(true);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -47,7 +39,14 @@ const L2i = () => {
   };
 
   return (
-    <Box component="main" sx={{ flexGrow: 1, margin: '20px' }}>
+    <Box
+      component="main"
+      sx={{
+        flexGrow: 1,
+        bgcolor: lightMode ? 'white' : 'black',
+        color: lightMode ? 'black' : 'white',
+      }}
+    >
       <Toolbar>
         <Stack direction="row" spacing={0} alignItems="center" justifyContent="start">
           <Image src="/icon.svg" alt="logo" width={80} height={80} />
@@ -57,7 +56,15 @@ const L2i = () => {
         </Stack>
       </Toolbar>
       {fileText ? (
-        <TxtViewer fileText={fileText} setFileText={setFileText} setInputText={setInputText} />
+        <Box margin="20px">
+          <TxtViewer
+            fileText={fileText}
+            setFileText={setFileText}
+            setInputText={setInputText}
+            lightMode={lightMode}
+            setLightMode={setLightMode}
+          />
+        </Box>
       ) : (
         <Box padding="0 20px 0 20px" marginBlockEnd="50px">
           <Box
