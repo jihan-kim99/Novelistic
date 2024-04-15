@@ -71,6 +71,10 @@ const TxtViewer = ({
       }
       currentPage === -1 ? setImageUrl('/ready.png') : setImageUrl(`data:image/png;base64,${data.image}`);
     } catch (error) {
+      if (currentPage === -1) {
+        setImageUrl('/ready.png');
+        return;
+      }
       setImageUrl('/error.png');
     }
   }, [description]);
