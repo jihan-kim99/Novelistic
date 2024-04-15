@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Pagination, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Grid, Pagination, Stack, TextField, Typography, styled } from '@mui/material';
 import Image from 'next/image';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import Lottie from 'react-lottie-player';
@@ -6,6 +6,42 @@ import Lottie from 'react-lottie-player';
 import loadingJson from '@/components/atom/loading.json';
 import TextLayoutMenu from '@/components/atom/textLayoutMenu';
 import { defaultTags } from '@/utils/defaultTags';
+
+const CssTextField = styled(TextField)({
+  '& label': {
+    color: '#A0AAB4',
+  },
+  '& label.Mui-focused': {
+    color: '#6F7E8C',
+  },
+  '& .MuiInput-underline:after': {
+    borderBottomColor: '#B2BAC2',
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: '#6F7E8C',
+    },
+    '&:hover fieldset': {
+      borderColor: '#B2BAC2',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#6F7E8C',
+    },
+  },
+  '& input': {
+    color: 'gray',
+  },
+});
+
+const CssPagination = styled(Pagination)({
+  '& .MuiPaginationItem-root': {
+    color: 'gray',
+  },
+  '& .MuiPaginationItem-page.Mui-selected': {
+    backgroundColor: 'darkgray',
+    color: 'white',
+  },
+});
 
 const TxtViewer = ({
   fileText,
@@ -20,9 +56,8 @@ const TxtViewer = ({
   setInputText: (text: string) => void;
   setLightMode: (mode: boolean) => void;
 }) => {
-  const [currentPage, setCurrentPage] = useState(-1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [description, setDescription] = useState<string>('');
   const [pageInput, setPageInput] = useState<number>(currentPage);
   const [fontSize, setFontSize] = useState<number>(16);
   const [lineSpace, setLineSpace] = useState<number>(1);
@@ -59,7 +94,7 @@ const TxtViewer = ({
     scrollToTop();
   }, [currentPage, scrollToTop]);
 
-  const generateImage = useCallback(async () => {
+  const generateImage = async (description) => {
     try {
       console.log('gen', description);
       console.log('gen page', currentPage);
@@ -86,7 +121,7 @@ const TxtViewer = ({
       }
       setImageUrl('/error.png');
     }
-  }, [description]);
+  };
 
   const handleAskAI = useCallback(async () => {
     const prompt = currentPageText.join('\n');
@@ -105,7 +140,7 @@ const TxtViewer = ({
     if (imageDesc.isImage) {
       setImageUrl(null);
       const tags = [...defaultTags].join(', ') + ', ' + imageDesc.description;
-      setDescription(tags);
+      generateImage(tags);
     }
   }, [currentPage]);
 
@@ -113,11 +148,6 @@ const TxtViewer = ({
     console.log('askAI from useEffect');
     handleAskAI();
   }, [currentPage]);
-
-  useEffect(() => {
-    console.log('gen from useEffect');
-    generateImage();
-  }, [description, generateImage]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -137,7 +167,7 @@ const TxtViewer = ({
 
   return (
     <>
-      <Box width="100%" display="flex" justifyContent="flex-end">
+      <Box width="100%" minHeight="100%" display="flex" justifyContent="flex-end">
         <TextLayoutMenu
           fontSize={fontSize}
           setFontSize={setFontSize}
@@ -190,15 +220,16 @@ const TxtViewer = ({
         </Grid>
       </Grid>
       <Stack spacing={3} direction="column" justifyContent="center" alignItems="center">
-        <Pagination
+        <CssPagination
           count={pageCount}
           page={currentPage + 1}
           variant="outlined"
           siblingCount={1}
+          color="primary"
           onChange={handlePageChange}
         />
         <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap">
-          <TextField
+          <CssTextField
             id="jumpPage"
             label="Jump to Page"
             type="number"
@@ -232,6 +263,7 @@ const TxtViewer = ({
               width: '150px',
               color: lightMode ? 'black' : 'white',
               borderColor: lightMode ? 'black' : 'white',
+              marginBottom: '20px',
             }}
             variant="outlined"
             onClick={() => {
