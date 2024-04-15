@@ -121,6 +121,12 @@ const L2i = () => {
               읽기 시작
             </Button>
           </Box>
+          <Typography color="gray" fontSize="12px" textAlign="center" marginTop="50px">
+            © Copyright 2024 Orca AI, Inc.
+          </Typography>
+          <Typography color="gray" fontSize="12px" textAlign="center">
+            대표자: 홍승표 | 사업자등록번호: 143-88-03054 | 이메일: spkbk98@gmail.com
+          </Typography>
         </Box>
       )}
     </Box>
