@@ -1220,6 +1220,11 @@ dequal@^2.0.3:
   resolved "https://registry.npmjs.org/dequal/-/dequal-2.0.3.tgz"
   integrity sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==
 
+detect-file-encoding-and-language@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/detect-file-encoding-and-language/-/detect-file-encoding-and-language-2.4.0.tgz#0633b81fbe977c47b82b41c1732aa4534add8541"
+  integrity sha512-moFSAumrGlLCNU5jnaHyCzRUJJu0BCZunfL08iMbnDAgvNnxZad7+WZ26U2dsrIbGChlDPLKmEyEb2tEPUJFkw==
+
 didyoumean@^1.2.2:
   version "1.2.2"
   resolved "https://registry.npmjs.org/didyoumean/-/didyoumean-1.2.2.tgz"

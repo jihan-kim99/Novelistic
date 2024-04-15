@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Box, Button, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import DetectFileEncodingAndLanguage from 'detect-file-encoding-and-language';
 
-import EPubViewer from '@/components/molecules/epubViewer';
+import TxtViewer from '@/components/molecules/txtViewer';
 import Image from 'next/image';
 
 const L2i = () => {
@@ -21,11 +22,17 @@ const L2i = () => {
     firstUpdate3.current = true;
   }, [fileText]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
 
       if (file) {
+        if (file.type !== 'text/plain') {
+          console.error('Invalid file type. Only text files are allowed.');
+          return;
+        }
+        const result = await DetectFileEncodingAndLanguage(file);
+        const encoding = result.encoding;
         const reader = new FileReader();
         reader.onload = (event) => {
           if (event.target && event.target.result) {
@@ -33,7 +40,8 @@ const L2i = () => {
             setFileText(text);
           }
         };
-        reader.readAsText(file);
+        console.log(encoding);
+        reader.readAsText(file, encoding);
       }
     }
   };
@@ -49,7 +57,7 @@ const L2i = () => {
         </Stack>
       </Toolbar>
       {fileText ? (
-        <EPubViewer fileText={fileText} setFileText={setFileText} setInputText={setInputText} />
+        <TxtViewer fileText={fileText} setFileText={setFileText} setInputText={setInputText} />
       ) : (
         <Box padding="0 20px 0 20px" marginBlockEnd="50px">
           <Box
@@ -113,6 +121,12 @@ const L2i = () => {
               읽기 시작
             </Button>
           </Box>
+          <Typography color="gray" fontSize="12px" textAlign="center" marginTop="50px">
+            © Copyright 2024 Orca AI, Inc.
+          </Typography>
+          <Typography color="gray" fontSize="12px" textAlign="center">
+            대표자: 홍승표 | 사업자등록번호: 143-88-03054 | 이메일: spkbk98@gmail.com
+          </Typography>
         </Box>
       )}
     </Box>
