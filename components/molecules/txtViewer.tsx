@@ -1,45 +1,28 @@
-import { Box, Button, Grid, Pagination, Stack, TextField, Typography, styled } from '@mui/material';
-import Image from 'next/image';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import Lottie from 'react-lottie-player';
+import {
+  Box,
+  Button,
+  Grid,
+  Pagination,
+  Stack,
+  Typography,
+  styled,
+} from "@mui/material";
+import Image from "next/image";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import Lottie from "react-lottie-player";
 
-import loadingJson from '@/components/atom/loading.json';
-import TextLayoutMenu from '@/components/atom/textLayoutMenu';
-import { defaultTags } from '@/utils/defaultTags';
-
-const CssTextField = styled(TextField)({
-  '& label': {
-    color: '#A0AAB4',
-  },
-  '& label.Mui-focused': {
-    color: '#6F7E8C',
-  },
-  '& .MuiInput-underline:after': {
-    borderBottomColor: '#B2BAC2',
-  },
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
-      borderColor: '#6F7E8C',
-    },
-    '&:hover fieldset': {
-      borderColor: '#B2BAC2',
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: '#6F7E8C',
-    },
-  },
-  '& input': {
-    color: 'gray',
-  },
-});
+import loadingJson from "@/components/atom/loading.json";
+import CssTextField from "@/components/atom/TextField";
+import TextLayoutMenu from "@/components/atom/textLayoutMenu";
+import { defaultTags } from "@/utils/defaultTags";
 
 const CssPagination = styled(Pagination)({
-  '& .MuiPaginationItem-root': {
-    color: 'gray',
+  "& .MuiPaginationItem-root": {
+    color: "gray",
   },
-  '& .MuiPaginationItem-page.Mui-selected': {
-    backgroundColor: 'darkgray',
-    color: 'white',
+  "& .MuiPaginationItem-page.Mui-selected": {
+    backgroundColor: "darkgray",
+    color: "white",
   },
 });
 
@@ -62,7 +45,7 @@ const TxtViewer = ({
   const [fontSize, setFontSize] = useState<number>(16);
   const [lineSpace, setLineSpace] = useState<number>(1);
 
-  const fileInLine = fileText.split('\n').filter((line) => line.trim() !== '');
+  const fileInLine = fileText.split("\n").filter((line) => line.trim() !== "");
   const pageSize = 50;
 
   const pageCount = Math.ceil(fileInLine.length / pageSize);
@@ -82,54 +65,59 @@ const TxtViewer = ({
   };
 
   const scrollToTop = useCallback(() => {
-    console.log('scrolling to top');
+    console.log("scrolling to top");
     window.scrollTo({
       top: 0,
-      behavior: 'instant',
+      behavior: "instant",
     });
   }, []);
 
   useEffect(() => {
-    console.log('called scrolltotop');
+    console.log("called scrolltotop");
     scrollToTop();
   }, [currentPage, scrollToTop]);
 
   const generateImage = async (description) => {
     try {
-      console.log('gen', description);
-      console.log('gen page', currentPage);
-      const res = await fetch('https://asia-northeast1-chatbot-32ff4.cloudfunctions.net/novelistic/generateImage', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          description,
-        }),
-      });
+      console.log("gen", description);
+      console.log("gen page", currentPage);
+      const res = await fetch(
+        "https://asia-northeast1-chatbot-32ff4.cloudfunctions.net/novelistic/generateImage",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            description,
+          }),
+        }
+      );
       const data = await res.json();
       console.log(data.image.length);
 
       if (data.image.length < 10000) {
-        throw new Error('Image generation failed');
+        throw new Error("Image generation failed");
       }
-      currentPage === -1 ? setImageUrl('/ready.png') : setImageUrl(`data:image/png;base64,${data.image}`);
+      currentPage === -1
+        ? setImageUrl("/ready.png")
+        : setImageUrl(`data:image/png;base64,${data.image}`);
     } catch (error) {
       if (currentPage === -1) {
-        setImageUrl('/ready.png');
+        setImageUrl("/ready.png");
         return;
       }
-      setImageUrl('/error.png');
+      setImageUrl("/error.png");
     }
   };
 
   const handleAskAI = useCallback(async () => {
-    const prompt = currentPageText.join('\n');
+    const prompt = currentPageText.join("\n");
     console.log(currentPage);
-    const res = await fetch('/api/askAI', {
-      method: 'POST',
+    const res = await fetch("/api/askAI", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         prompt: prompt,
@@ -139,50 +127,68 @@ const TxtViewer = ({
     const imageDesc = JSON.parse(data.text.message.content);
     if (imageDesc.isImage) {
       setImageUrl(null);
-      const tags = [...defaultTags].join(', ') + ', ' + imageDesc.description;
+      const tags = [...defaultTags].join(", ") + ", " + imageDesc.description;
       generateImage(tags);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   useEffect(() => {
-    console.log('askAI from useEffect');
+    console.log("askAI from useEffect");
     handleAskAI();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key === 'ArrowLeft') {
+      if (event.key === "ArrowLeft") {
         setCurrentPage((prevPageInput) => prevPageInput - 1);
         setPageInput((pageInput) => pageInput - 1);
-      } else if (event.key === 'ArrowRight') {
+      } else if (event.key === "ArrowRight") {
         setCurrentPage((prevPageInput) => prevPageInput + 1);
         setPageInput((pageInput) => pageInput + 1);
       }
     };
-    document.addEventListener('keydown', handleKeyPress);
+    document.addEventListener("keydown", handleKeyPress);
     return () => {
-      document.removeEventListener('keydown', handleKeyPress);
+      document.removeEventListener("keydown", handleKeyPress);
     };
   }, [currentPage]);
 
   return (
     <>
-      <Box width="100%" minHeight="100%" display="flex" justifyContent="flex-end">
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        minHeight="100%"
+        width="100%"
+      >
         <TextLayoutMenu
           fontSize={fontSize}
-          setFontSize={setFontSize}
-          lineSpace={lineSpace}
-          setLineSpace={setLineSpace}
           lightMode={lightMode}
+          lineSpace={lineSpace}
+          setFontSize={setFontSize}
           setLightMode={setLightMode}
+          setLineSpace={setLineSpace}
         />
       </Box>
       <Grid container justifyContent="center" alignItems="center">
-        <Grid item lg={6} xs={12} flex={1} marginTop={5} marginBottom={5} flexWrap="wrap">
+        <Grid
+          item
+          lg={6}
+          xs={12}
+          flex={1}
+          flexWrap="wrap"
+          marginBottom={5}
+          marginTop={5}
+        >
           {currentPageText.map((line, index) => (
-            <Typography key={index} marginTop={lineSpace} fontSize={fontSize} textAlign="start">
+            <Typography
+              fontSize={fontSize}
+              key={index}
+              marginTop={lineSpace}
+              textAlign="start"
+            >
               {line}
             </Typography>
           ))}
@@ -192,9 +198,9 @@ const TxtViewer = ({
           lg={6}
           xs={12}
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            alignItems: "center",
+            display: "flex",
+            justifyContent: "center",
           }}
         >
           {imageUrl ? (
@@ -202,45 +208,60 @@ const TxtViewer = ({
               margin={{ lg: 4, xs: 0 }}
               marginBlockEnd={{ lg: 4, xs: 4 }}
               sx={{
-                aspectRatio: '1/1',
-                height: 'auto',
-                position: 'relative',
-                width: '100%',
+                aspectRatio: "1/1",
+                height: "auto",
+                position: "relative",
+                width: "100%",
               }}
             >
               <Image
-                src={imageUrl}
                 alt="Generated Image"
                 fill
                 priority
-                style={{ borderRadius: '1rem', objectFit: 'cover' }}
+                src={imageUrl}
+                style={{ borderRadius: "1rem", objectFit: "cover" }}
               />
             </Box>
           ) : (
-            <Lottie loop animationData={loadingJson} play style={{ width: 180, height: 180 }} />
+            <Lottie
+              animationData={loadingJson}
+              loop
+              play
+              style={{ width: 180, height: 180 }}
+            />
           )}
         </Grid>
       </Grid>
-      <Stack spacing={3} direction="column" justifyContent="center" alignItems="center">
+      <Stack
+        alignItems="center"
+        direction="column"
+        justifyContent="center"
+        spacing={3}
+      >
         <CssPagination
-          count={pageCount}
-          page={currentPage + 1}
-          variant="outlined"
-          siblingCount={1}
           color="primary"
+          count={pageCount}
           onChange={handlePageChange}
+          page={currentPage + 1}
+          siblingCount={1}
+          variant="outlined"
         />
-        <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap">
+        <Stack
+          direction="row"
+          flexWrap="wrap"
+          spacing={{ xs: 1, sm: 2 }}
+          useFlexGap
+        >
           <CssTextField
             id="jumpPage"
             label="Jump to Page"
-            type="number"
-            variant="outlined"
             size="small"
+            type="number"
             value={pageInput + 1}
+            variant="outlined"
             onChange={(e) => setPageInput(parseInt(e.target.value) - 1)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 handleJumpPage();
               }
             }}
@@ -250,27 +271,32 @@ const TxtViewer = ({
             variant="outlined"
             onClick={handleJumpPage}
             style={{
+              borderColor: lightMode ? "black" : "white",
               borderRadius: 20,
-              color: lightMode ? 'black' : 'white',
-              borderColor: lightMode ? 'black' : 'white',
+              color: lightMode ? "black" : "white",
             }}
           >
             Jump
           </Button>
         </Stack>
-        <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap">
+        <Stack
+          direction="row"
+          flexWrap="wrap"
+          spacing={{ xs: 1, sm: 2 }}
+          useFlexGap
+        >
           <Button
             style={{
+              borderColor: lightMode ? "black" : "white",
               borderRadius: 20,
-              width: '150px',
-              color: lightMode ? 'black' : 'white',
-              borderColor: lightMode ? 'black' : 'white',
-              marginBottom: '20px',
+              color: lightMode ? "black" : "white",
+              marginBottom: "20px",
+              width: "150px",
             }}
             variant="outlined"
             onClick={() => {
-              setFileText('');
-              setInputText('');
+              setFileText("");
+              setInputText("");
             }}
           >
             Go Back
