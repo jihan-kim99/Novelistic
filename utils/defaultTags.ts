@@ -4,8 +4,4 @@ export const defaultTags = [
   'high quality',
   'high resolution',
   '8k',
-  'art',
-  'illustration',
-  'novel illustration',
-  'best anatomy',
 ];
