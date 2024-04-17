@@ -6,4 +6,5 @@ export const defaultTags = [
   '8k',
   'illustration',
   'artist_cg',
+  'style_anime',
 ];
