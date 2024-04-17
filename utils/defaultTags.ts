@@ -4,4 +4,6 @@ export const defaultTags = [
   'high quality',
   'high resolution',
   '8k',
+  'illustration',
+  'artist_cg',
 ];
