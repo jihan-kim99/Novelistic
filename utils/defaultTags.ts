@@ -7,4 +7,5 @@ export const defaultTags = [
   'art',
   'illustration',
   'novel illustration',
+  'best anatomy',
 ];

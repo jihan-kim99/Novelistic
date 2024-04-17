@@ -1,19 +1,30 @@
-import { LightMode } from '@mui/icons-material';
-import { Button, Menu, MenuItem, Select, Typography } from '@mui/material';
+import { Box, Button, Menu, MenuItem, Select, Typography } from '@mui/material';
 import { MouseEvent, useState } from 'react';
+
+const MenuItemContainer = ({ children }) => (
+  <MenuItem>
+    <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+      {children}
+    </Box>
+  </MenuItem>
+);
 
 export default function TextLayoutMenu({
   fontSize,
   setFontSize,
-  lineSpace,
-  setLineSpace,
+  letterSpace,
+  setLetterSpace,
+  lineHeight,
+  setLineHeight,
   lightMode,
   setLightMode,
 }: {
   fontSize: number;
   setFontSize: (fontSize: number) => void;
-  lineSpace: number;
-  setLineSpace: (lineSpace: number) => void;
+  letterSpace: number;
+  setLetterSpace: (letterSpace: number) => void;
+  lineHeight: number;
+  setLineHeight: (lineHeight: number) => void;
   lightMode: boolean;
   setLightMode: (mode: boolean) => void;
 }) {
@@ -53,7 +64,7 @@ export default function TextLayoutMenu({
           'aria-labelledby': 'basic-button',
         }}
       >
-        <MenuItem>
+        <MenuItemContainer>
           <Typography marginRight={2}>크기</Typography>
           <Select
             labelId="demo-simple-select-label"
@@ -68,14 +79,31 @@ export default function TextLayoutMenu({
             <MenuItem value={24}>24</MenuItem>
             <MenuItem value={28}>28</MenuItem>
           </Select>
-        </MenuItem>
-        <MenuItem>
-          <Typography marginRight={2}>간격</Typography>
+        </MenuItemContainer>
+        <MenuItemContainer>
+          <Typography marginRight={2}>글간격</Typography>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={lineSpace}
-            onChange={(e) => setLineSpace(e.target.value as number)}
+            value={letterSpace}
+            onChange={(e) => setLetterSpace(e.target.value as number)}
+            size="small"
+            style={{ position: 'relative' }}
+          >
+            <MenuItem value={1}>1</MenuItem>
+            <MenuItem value={1.5}>1.5</MenuItem>
+            <MenuItem value={2}>2</MenuItem>
+            <MenuItem value={2.5}>2.5</MenuItem>
+            <MenuItem value={3}>3</MenuItem>
+          </Select>
+        </MenuItemContainer>
+        <MenuItemContainer>
+          <Typography marginRight={2}>줄간격</Typography>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={lineHeight}
+            onChange={(e) => setLineHeight(e.target.value as number)}
             size="small"
           >
             <MenuItem value={1}>1</MenuItem>
@@ -84,8 +112,8 @@ export default function TextLayoutMenu({
             <MenuItem value={2.5}>2.5</MenuItem>
             <MenuItem value={3}>3</MenuItem>
           </Select>
-        </MenuItem>
-        <MenuItem>
+        </MenuItemContainer>
+        <MenuItemContainer>
           <Typography marginRight={2}>모드</Typography>
           <Select
             labelId="demo-simple-select-label"
@@ -97,7 +125,7 @@ export default function TextLayoutMenu({
             <MenuItem value="light">라이트</MenuItem>
             <MenuItem value="dark">다크</MenuItem>
           </Select>
-        </MenuItem>
+        </MenuItemContainer>
       </Menu>
     </>
   );
