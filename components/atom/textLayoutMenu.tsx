@@ -53,7 +53,7 @@ export default function TextLayoutMenu({
           borderColor: lightMode ? 'black' : 'white',
         }}
       >
-        설정
+        setting
       </Button>
       <Menu
         id="basic-menu"
@@ -65,7 +65,7 @@ export default function TextLayoutMenu({
         }}
       >
         <MenuItemContainer>
-          <Typography marginRight={2}>크기</Typography>
+          <Typography marginRight={2}>Font Size</Typography>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
@@ -81,7 +81,7 @@ export default function TextLayoutMenu({
           </Select>
         </MenuItemContainer>
         <MenuItemContainer>
-          <Typography marginRight={2}>글간격</Typography>
+          <Typography marginRight={2}>Letter Spacing</Typography>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
@@ -98,7 +98,7 @@ export default function TextLayoutMenu({
           </Select>
         </MenuItemContainer>
         <MenuItemContainer>
-          <Typography marginRight={2}>줄간격</Typography>
+          <Typography marginRight={2}>Line height</Typography>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
@@ -114,7 +114,7 @@ export default function TextLayoutMenu({
           </Select>
         </MenuItemContainer>
         <MenuItemContainer>
-          <Typography marginRight={2}>모드</Typography>
+          <Typography marginRight={2}>Light Mode</Typography>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
@@ -122,8 +122,8 @@ export default function TextLayoutMenu({
             onChange={(e) => setLightMode(e.target.value === 'light' ? true : false)}
             size="small"
           >
-            <MenuItem value="light">라이트</MenuItem>
-            <MenuItem value="dark">다크</MenuItem>
+            <MenuItem value="light">Light</MenuItem>
+            <MenuItem value="dark">Dark</MenuItem>
           </Select>
         </MenuItemContainer>
       </Menu>

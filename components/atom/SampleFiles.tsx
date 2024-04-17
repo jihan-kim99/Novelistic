@@ -28,13 +28,13 @@ const SampleFiles = ({ handleExapleFiles }: { handleExapleFiles: (fileName: stri
               },
             }}
           >
-            샘플 파일
+            Sample Files
           </Typography>
           {open ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <a onClick={() => handleExapleFiles('위대한_개츠비.txt')}>
+            <a onClick={() => handleExapleFiles('great_gatsby.txt')}>
               <Typography
                 color="gray"
                 sx={{
@@ -44,7 +44,7 @@ const SampleFiles = ({ handleExapleFiles }: { handleExapleFiles: (fileName: stri
                   },
                 }}
               >
-                위대한 개츠비
+                great_gatsby
               </Typography>
             </a>
             <a onClick={() => handleExapleFiles('김내성-애인(상).txt')}>

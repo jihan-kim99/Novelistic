@@ -93,7 +93,7 @@ const L2i = () => {
             }}
           >
             <Typography fontSize={{ lg: '48px', xs: '24px' }} fontWeight="bold" mt="50px">
-              택본 업로드 (pc 사용을 권장합니다)
+              Upload your txt file
             </Typography>
           </Box>
           <Box display="flex" justifyContent="start" alignItems="start">
@@ -111,20 +111,20 @@ const L2i = () => {
                 width: 200,
               }}
             >
-              업로드 버튼
+              Upload
               <input type="file" hidden onChange={handleFileChange} />
             </Button>
           </Box>
           <SampleFiles handleExapleFiles={handleExapleFiles} />
           <Box width={{ md: '70%', xs: '100%' }} sx={{ mt: '50px' }}>
             <Typography fontSize={{ lg: '48px', xs: '24px' }} fontWeight="bold" marginTop="50px" textAlign="start">
-              소설 텍스트로 시작
+              start from text
             </Typography>
             <CssTextField
               fullWidth
               multiline
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="소설 본문을 입력해 주세요."
+              placeholder="Input your novel text."
               rows={10}
               sx={{ mt: '50px' }}
               value={inputText}
@@ -143,7 +143,7 @@ const L2i = () => {
               }}
               onClick={() => setFileText(inputText)}
             >
-              읽기 시작
+              Start Reading
             </Button>
           </Box>
           <Typography color="gray" fontSize="12px" marginTop="50px" textAlign="center">
