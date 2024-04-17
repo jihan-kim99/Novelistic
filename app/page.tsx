@@ -63,7 +63,7 @@ const L2i = () => {
         <Stack alignItems="center" direction="row" justifyContent="start" spacing={0}>
           <IconButton
             onClick={() => setFileText('')}
-            style={{ backgroundColor: 'white', width: '80px', height: '80px' }}
+            style={{ backgroundColor: 'white', width: '64px', height: '64px' }}
           >
             <Image alt="logo" fill src="/icon.svg" style={{ objectFit: 'fill' }} />
           </IconButton>
