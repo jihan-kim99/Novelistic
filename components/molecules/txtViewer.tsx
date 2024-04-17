@@ -103,7 +103,7 @@ const TxtViewer = ({
   };
 
   const handleAskAI = useCallback(async () => {
-    const prompt = currentPageText.join('\n');
+    const prompt = currentPageText.join('\n').replace(/[{}]/g, '');
     console.log(currentPage);
     const res = await fetch('/api/askAI', {
       method: 'POST',
