@@ -86,21 +86,17 @@ const TxtViewer = ({
     try {
       console.log("gen", description);
       console.log("gen page", currentPage);
-      const res = await fetch(
-        "https://asia-northeast1-chatbot-32ff4.cloudfunctions.net/novelistic/generateImage",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            description,
-          }),
-        }
-      );
+      const res = await fetch("/api/imageGen", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          inputs: description,
+        }),
+      });
       const data = await res.json();
       console.log(data.image.length);
-
       if (data.image.length < 10000) {
         throw new Error("Image generation failed");
       }

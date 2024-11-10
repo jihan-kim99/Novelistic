@@ -15,8 +15,6 @@ const Viewer = () => {
   const [lightMode, setLightMode] = useState<boolean>(true);
   const [inputText, setInputText] = useState<string>("");
 
-  console.log(fileText);
-
   return (
     <Box margin="20px">
       <TxtViewer

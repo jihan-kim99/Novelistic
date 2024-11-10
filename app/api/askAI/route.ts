@@ -1,22 +1,19 @@
-import OpenAI from 'openai';
-import { NextRequest, NextResponse } from 'next/server';
-
-import { streamToString } from '@/utils/streamToString';
+import OpenAI from "openai";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.OPENAI_API_KEY;
-  const body = await streamToString(req.body);
-  const prompt = JSON.parse(body).prompt;
+  const { prompt } = await req.json();
   const openai = new OpenAI({
     apiKey: apiKey,
     dangerouslyAllowBrowser: true,
   });
   const completion = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    response_format: { type: 'json_object' },
+    model: "gpt-3.5-turbo",
+    response_format: { type: "json_object" },
     messages: [
       {
-        role: 'system',
+        role: "system",
         content: `
           You are a illustration artist. You have been given a task to draw an illustration based on the given novel text.
           You MUST read the novel text and choose the scene that you want to illustrate.
@@ -32,7 +29,7 @@ export async function POST(req: NextRequest) {
           This tags always be english words.
           `,
       },
-      { role: 'user', content: prompt },
+      { role: "user", content: prompt },
     ],
   });
 
