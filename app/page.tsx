@@ -28,7 +28,7 @@ const L2i = () => {
   const [lightMode, setLightMode] = useState<boolean>(true);
   const [userSessions, setUserSessions] = useState<string[]>([]);
   const sessionId = useRef<string | null>(null);
-  const { user } = useAuth();
+  const { user, login, logout } = useAuth();
   const router = useRouter();
 
   const saveFileText = async (fileText: string) => {
@@ -89,6 +89,30 @@ const L2i = () => {
       console.error("Error loading example file:", error);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      const saveUserToFirestore = async () => {
+        try {
+          const userRef = doc(db, "users", user.uid);
+          const userSnap = await getDoc(userRef);
+
+          if (!userSnap.exists()) {
+            await setDoc(userRef, {
+              uid: user.uid,
+              displayName: user.displayName,
+              email: user.email,
+              photoURL: user.photoURL,
+              sessions: [],
+            });
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      saveUserToFirestore();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -154,23 +178,23 @@ const L2i = () => {
               Novelistic
             </Typography>
           </Stack>
-          <Link href="/login" passHref>
-            {user ? (
-              <Button
-                color="inherit"
-                sx={{ marginLeft: "auto", marginRight: "20px" }}
-              >
-                {user.displayName}
-              </Button>
-            ) : (
-              <Button
-                color="inherit"
-                sx={{ marginLeft: "auto", marginRight: "20px" }}
-              >
-                Login
-              </Button>
-            )}
-          </Link>
+          {user ? (
+            <Button
+              color="inherit"
+              sx={{ marginLeft: "auto", marginRight: "20px" }}
+              onClick={logout}
+            >
+              {user.displayName}
+            </Button>
+          ) : (
+            <Button
+              color="inherit"
+              sx={{ marginLeft: "auto", marginRight: "20px" }}
+              onClick={login}
+            >
+              Login
+            </Button>
+          )}
         </Box>
       </Toolbar>
       <Box padding="0 20px 0 20px" marginBlockEnd="50px">
