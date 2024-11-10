@@ -34,14 +34,10 @@ const CssPagination = styled(Pagination)({
 const TxtViewer = ({
   fileText,
   lightMode,
-  setFileText,
-  setInputText,
   setLightMode,
 }: {
   fileText: string;
   lightMode: boolean;
-  setFileText: (text: string) => void;
-  setInputText: (text: string) => void;
   setLightMode: (mode: boolean) => void;
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -96,18 +92,9 @@ const TxtViewer = ({
         }),
       });
       const data = await res.json();
-      console.log(data.image.length);
-      if (data.image.length < 10000) {
-        throw new Error("Image generation failed");
-      }
-      currentPage === -1
-        ? setImageUrl("/ready.png")
-        : setImageUrl(`data:image/png;base64,${data.image}`);
+      console.log(data);
+      setImageUrl(data.imageUrl[0]);
     } catch (error) {
-      if (currentPage === -1) {
-        setImageUrl("/ready.png");
-        return;
-      }
       setImageUrl("/error.png");
     }
   };
