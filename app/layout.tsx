@@ -4,6 +4,7 @@ import { CssBaseline } from "@mui/material";
 
 import { pretendard, pretendardVariable } from "@/styles/font";
 import GlobalStyle from "@/styles/GlobalStyle";
+import { AuthProvider } from "@/context/auth";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://novelistic.site"),
@@ -35,10 +36,12 @@ export default function RootLayout({
     >
       <head />
       <body>
-        <CssBaseline />
-        <GlobalStyle />
-        {children}
-        <Analytics />
+        <AuthProvider>
+          <CssBaseline />
+          <GlobalStyle />
+          {children}
+          <Analytics />
+        </AuthProvider>
       </body>
     </html>
   );

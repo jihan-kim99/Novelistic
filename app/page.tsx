@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -12,6 +12,7 @@ import {
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DetectFileEncodingAndLanguage from "detect-file-encoding-and-language";
+import { doc, setDoc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 
 import CssTextField from "@/components/atom/TextField";
 import Image from "next/image";
@@ -19,18 +20,38 @@ import SampleFiles from "@/components/atom/SampleFiles";
 import Link from "next/link";
 import createSessionId from "@/utils/createSessionId";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/auth";
+import { db } from "@/utils/firebaseConfig";
 
 const L2i = () => {
   const [inputText, setInputText] = useState<string>("");
   const [lightMode, setLightMode] = useState<boolean>(true);
+  const [userSessions, setUserSessions] = useState<string[]>([]);
   const sessionId = useRef<string | null>(null);
+  const { user } = useAuth();
   const router = useRouter();
 
-  const saveFileText = (fileText: string) => {
+  const saveFileText = async (fileText: string) => {
     sessionId.current = createSessionId();
-    localStorage.setItem(sessionId.current, fileText);
 
-    router.push(`/${sessionId.current}`);
+    try {
+      await setDoc(doc(db, "sessions", sessionId.current), {
+        sessionId: sessionId.current,
+        fileText,
+        createdAt: new Date(),
+        userId: user?.uid,
+        currentPage: 0,
+      });
+
+      const userRef = doc(db, "users", user.uid);
+      await updateDoc(userRef, {
+        sessions: arrayUnion(sessionId.current),
+      });
+
+      router.push(`/${sessionId.current}`);
+    } catch (error) {
+      console.error("Error saving file text to Firestore:", error);
+    }
   };
 
   const handleFileChange = async (
@@ -69,6 +90,24 @@ const L2i = () => {
     }
   };
 
+  useEffect(() => {
+    if (user) {
+      const fetchUserSessions = async () => {
+        try {
+          const userRef = doc(db, "users", user.uid);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+            console.log(userSnap.data());
+            setUserSessions(userSnap.data().sessions);
+          }
+        } catch (error) {
+          console.error("Error fetching user sessions from Firestore:", error);
+        }
+      };
+      fetchUserSessions();
+    }
+  }, [user]);
+
   return (
     <Box
       component="main"
@@ -79,30 +118,60 @@ const L2i = () => {
       }}
     >
       <Toolbar>
-        <Stack
-          alignItems="center"
-          direction="row"
-          justifyContent="start"
-          spacing={0}
+        <Box
+          sx={{
+            alignItems: "center",
+            display: "flex",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
         >
-          <IconButton
-            style={{ backgroundColor: "white", width: "64px", height: "64px" }}
+          <Stack
+            alignItems="center"
+            direction="row"
+            justifyContent="start"
+            spacing={0}
           >
-            <Image
-              alt="logo"
-              fill
-              src="/icon.svg"
-              style={{ objectFit: "fill" }}
-            />
-          </IconButton>
-          <Typography
-            component="div"
-            fontSize={{ lg: "64px", xs: "36px" }}
-            fontWeight="bold"
-          >
-            Novelistic
-          </Typography>
-        </Stack>
+            <IconButton
+              style={{
+                backgroundColor: "white",
+                width: "64px",
+                height: "64px",
+              }}
+            >
+              <Image
+                alt="logo"
+                fill
+                src="/icon.svg"
+                style={{ objectFit: "fill" }}
+              />
+            </IconButton>
+            <Typography
+              component="div"
+              fontSize={{ lg: "64px", xs: "36px" }}
+              fontWeight="bold"
+            >
+              Novelistic
+            </Typography>
+          </Stack>
+          <Link href="/login" passHref>
+            {user ? (
+              <Button
+                color="inherit"
+                sx={{ marginLeft: "auto", marginRight: "20px" }}
+              >
+                {user.displayName}
+              </Button>
+            ) : (
+              <Button
+                color="inherit"
+                sx={{ marginLeft: "auto", marginRight: "20px" }}
+              >
+                Login
+              </Button>
+            )}
+          </Link>
+        </Box>
       </Toolbar>
       <Box padding="0 20px 0 20px" marginBlockEnd="50px">
         <Box
@@ -175,6 +244,29 @@ const L2i = () => {
           >
             Start Reading
           </Button>
+        </Box>
+        <Box width={{ md: "70%", xs: "100%" }} sx={{ mt: "50px" }}>
+          <Typography
+            fontSize={{ lg: "48px", xs: "24px" }}
+            fontWeight="bold"
+            marginTop="50px"
+            textAlign="start"
+          >
+            start from previous upload
+          </Typography>
+          <Box>
+            {userSessions.map((sessionId) => (
+              <Link key={sessionId} href={`/${sessionId}`} passHref>
+                <Button
+                  color="inherit"
+                  sx={{ marginTop: "20px", width: "100%" }}
+                  variant="outlined"
+                >
+                  {sessionId}
+                </Button>
+              </Link>
+            ))}
+          </Box>
         </Box>
         <Typography
           color="gray"

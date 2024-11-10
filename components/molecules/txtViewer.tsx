@@ -8,7 +8,14 @@ import {
   styled,
 } from "@mui/material";
 import Image from "next/image";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import Lottie from "react-lottie-player";
 
 import loadingJson from "@/components/atom/loading.json";
@@ -35,20 +42,26 @@ const TxtViewer = ({
   fileText,
   lightMode,
   setLightMode,
+  currentPage,
+  setCurrentPage,
 }: {
   fileText: string;
   lightMode: boolean;
   setLightMode: (mode: boolean) => void;
+  currentPage: number;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
 }) => {
-  const [currentPage, setCurrentPage] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [pageInput, setPageInput] = useState<number>(currentPage);
   const [fontSize, setFontSize] = useState<number>(16);
   const [letterSpace, setLetterSpace] = useState<number>(1);
   const [lineHeight, setLineHeight] = useState<number>(2);
+  const [generating, setGenerating] = useState<boolean>(false);
 
   const fileInLine = fileText.split("\n").filter((line) => line.trim() !== "");
-  const pageSize = 50;
+  const pageSize = 10;
+
+  console.log("currentPage", currentPage);
 
   const pageCount = Math.ceil(fileInLine.length / pageSize);
   const startIndex = currentPage * pageSize;
@@ -66,7 +79,6 @@ const TxtViewer = ({
   };
 
   const scrollToTop = useCallback(() => {
-    console.log("scrolling to top");
     window.scrollTo({
       top: 0,
       behavior: "instant",
@@ -74,7 +86,6 @@ const TxtViewer = ({
   }, []);
 
   useEffect(() => {
-    console.log("called scrolltotop");
     scrollToTop();
   }, [currentPage, scrollToTop]);
 
@@ -96,10 +107,13 @@ const TxtViewer = ({
       setImageUrl(data.imageUrl[0]);
     } catch (error) {
       setImageUrl("/error.png");
+    } finally {
+      setGenerating(false);
     }
   };
 
   const handleAskAI = useCallback(async () => {
+    setGenerating(true);
     const prompt = currentPageText.join("\n").replace(/[{}]/g, "");
     console.log(currentPage);
     const res = await fetch("/api/askAI", {
@@ -118,13 +132,6 @@ const TxtViewer = ({
       const tags = [...defaultTags].join(", ") + ", " + imageDesc.description;
       generateImage(tags);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
-
-  useEffect(() => {
-    console.log("askAI from useEffect");
-    handleAskAI();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   useEffect(() => {
@@ -215,13 +222,25 @@ const TxtViewer = ({
                 style={{ borderRadius: "1rem", objectFit: "cover" }}
               />
             </Box>
-          ) : (
+          ) : generating ? (
             <Lottie
               animationData={loadingJson}
               loop
               play
-              style={{ width: 180, height: 180 }}
+              style={{ width: 200, height: 200 }}
             />
+          ) : (
+            <Button
+              onClick={handleAskAI}
+              style={{
+                borderColor: lightMode ? "black" : "white",
+                borderRadius: 20,
+                color: lightMode ? "black" : "white",
+              }}
+              variant="outlined"
+            >
+              Generate Image
+            </Button>
           )}
         </Grid>
       </Grid>
