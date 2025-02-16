@@ -9,8 +9,10 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  SelectChangeEvent,
 } from "@mui/material";
 import { useAI } from "../contexts/AIContext";
+import { AIModel } from "@/types/ai";
 
 interface AISettingsDialogProps {
   open: boolean;
@@ -36,7 +38,9 @@ export default function AISettingsDialog({
           <Select
             value={model}
             label="AI Model"
-            onChange={(e) => setModel(e.target.value as any)}
+            onChange={(e: SelectChangeEvent<AIModel>) =>
+              setModel(e.target.value as AIModel)
+            }
           >
             <MenuItem value="gemini">Gemini</MenuItem>
           </Select>
