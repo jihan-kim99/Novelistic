@@ -128,6 +128,36 @@ export class NovelisticDB {
       request.onerror = () => reject(request.error);
     });
   }
+
+  async deleteNovel(id: number): Promise<void> {
+    this.ensureInitialized();
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(
+        ["novels", "images"],
+        "readwrite"
+      );
+
+      // Delete the novel
+      const novelStore = transaction.objectStore("novels");
+      novelStore.delete(id);
+
+      // Delete associated images
+      const imageStore = transaction.objectStore("images");
+      const imageIndex = imageStore.index("novelId");
+      const imageRequest = imageIndex.getAllKeys(id);
+
+      imageRequest.onsuccess = () => {
+        const keys = imageRequest.result;
+        keys.forEach((key) => {
+          imageStore.delete(key);
+        });
+      };
+
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+    });
+  }
 }
 
 export const db = new NovelisticDB();

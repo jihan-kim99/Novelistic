@@ -42,12 +42,35 @@ export default function Home() {
     }
   };
 
+  const handleDelete = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this novel?")) return;
+
+    try {
+      await db.deleteNovel(id);
+      setNovels(novels.filter((novel) => novel.id !== id));
+    } catch (error) {
+      console.error("Failed to delete novel:", error);
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
 
   return (
     <div className="container">
       <h1>My Novels</h1>
-      <NovelList novels={novels} onCreateNew={handleCreateNew} />
+      <NovelList
+        novels={novels}
+        onCreateNew={handleCreateNew}
+        onDelete={handleDelete}
+      />
+      <style jsx global>{`
+        .container {
+          width: 100%;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 1rem;
+        }
+      `}</style>
     </div>
   );
 }

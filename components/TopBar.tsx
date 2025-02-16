@@ -53,9 +53,6 @@ export default function TopBar({
           onBlur={handleTitleBlur}
           variant="standard"
           sx={{ flexGrow: 1 }}
-          InputProps={{
-            style: { fontSize: "1.5rem", fontWeight: "bold" },
-          }}
         />
         <IconButton onClick={toggleTheme} sx={{ ml: 1 }}>
           {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}

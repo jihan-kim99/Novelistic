@@ -1,16 +1,29 @@
 import Link from "next/link";
-import { Card, CardContent, Typography, Button, Box } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  Box,
+  IconButton,
+} from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import { Novel } from "@/types/database";
 
 interface NovelListProps {
   novels: Novel[];
   onCreateNew: () => void;
+  onDelete: (id: number) => void;
 }
 
-export default function NovelList({ novels, onCreateNew }: NovelListProps) {
+export default function NovelList({
+  novels,
+  onCreateNew,
+  onDelete,
+}: NovelListProps) {
   return (
     <Box sx={{ p: 3 }}>
       <Button
@@ -44,8 +57,23 @@ export default function NovelList({ novels, onCreateNew }: NovelListProps) {
                     transform: "scale(1.02)",
                     transition: "transform 0.2s",
                   },
+                  position: "relative",
                 }}
               >
+                <IconButton
+                  size="small"
+                  sx={{
+                    position: "absolute",
+                    right: 8,
+                    top: 8,
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (novel.id) onDelete(novel.id);
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     {novel.title || "Untitled Novel"}
