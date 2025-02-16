@@ -82,6 +82,7 @@ export async function POST(request: Request) {
       "## Instruction",
       message,
       "\nContinue the story based on the above context and notes. Maintain consistency with the existing content and writing style.",
+      "\nDo not write too much in a single response. Keep the response length within 1000 tokens.",
       "## Language: Always use the original content language as the base language for the continuation and for notes.",
       "Return your response in the following JSON format:",
       "{",
@@ -100,7 +101,7 @@ export async function POST(request: Request) {
     const chat = model.startChat({
       history: [],
       generationConfig: {
-        maxOutputTokens: 1000,
+        maxOutputTokens: 1500,
       },
       safetySettings: [
         {
