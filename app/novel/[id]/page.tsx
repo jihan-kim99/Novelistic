@@ -41,6 +41,14 @@ export default function EditNovel() {
           setNovel(novelData);
           setContent(novelData.content);
           setTitle(novelData.title);
+          setNotes(
+            novelData.notes || {
+              characters: [],
+              settings: [],
+              plotPoints: [],
+              style: "",
+            }
+          );
         } else {
           router.push("/");
         }
@@ -65,6 +73,7 @@ export default function EditNovel() {
       ...novel,
       title,
       content,
+      notes,
       updatedAt: new Date(),
     };
 
@@ -86,30 +95,37 @@ export default function EditNovel() {
     try {
       const response = await generate(aiCommand, {
         content,
-        notes,
       });
 
-      setContent(content + "\n" + response.content);
-
-      const updatedNotes = {
-        characters: [
-          ...new Set([...notes.characters, ...response.notes.characters]),
-        ],
-        settings: [...new Set([...notes.settings, ...response.notes.settings])],
-        plotPoints: [
-          ...new Set([...notes.plotPoints, ...response.notes.plotPoints]),
-        ],
-        style: response.notes.style || notes.style,
-      };
-
-      console.log("Final merged notes:", updatedNotes);
-      setNotes(updatedNotes);
-
+      setContent(content + response);
       setAiCommand(""); // Clear the input after successful generation
     } catch (error) {
       console.error("AI generation failed:", error);
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  // Add auto-save for notes changes
+  const handleNotesChange = (
+    field: "characters" | "settings" | "plotPoints" | "style",
+    value: string | string[]
+  ) => {
+    const updatedNotes = {
+      ...notes,
+      [field]: value,
+    };
+    setNotes(updatedNotes);
+    // Trigger save after notes update
+    if (novel) {
+      const updatedNovel: Novel = {
+        ...novel,
+        notes: updatedNotes,
+        updatedAt: new Date(),
+      };
+      db.saveNovel(updatedNovel)
+        .then(() => setLastSaved(new Date()))
+        .catch((error) => console.error("Failed to save notes:", error));
     }
   };
 
@@ -159,10 +175,7 @@ export default function EditNovel() {
                 fullWidth
                 value={notes.characters.join("\n")}
                 onChange={(e) =>
-                  setNotes({
-                    ...notes,
-                    characters: e.target.value.split("\n"),
-                  })
+                  handleNotesChange("characters", e.target.value.split("\n"))
                 }
                 sx={{ mb: 2 }}
               />
@@ -173,10 +186,7 @@ export default function EditNovel() {
                 fullWidth
                 value={notes.settings.join("\n")}
                 onChange={(e) =>
-                  setNotes({
-                    ...notes,
-                    settings: e.target.value.split("\n"),
-                  })
+                  handleNotesChange("settings", e.target.value.split("\n"))
                 }
                 sx={{ mb: 2 }}
               />
@@ -187,10 +197,7 @@ export default function EditNovel() {
                 fullWidth
                 value={notes.plotPoints.join("\n")}
                 onChange={(e) =>
-                  setNotes({
-                    ...notes,
-                    plotPoints: e.target.value.split("\n"),
-                  })
+                  handleNotesChange("plotPoints", e.target.value.split("\n"))
                 }
                 sx={{ mb: 2 }}
               />
@@ -200,12 +207,7 @@ export default function EditNovel() {
                 rows={2}
                 fullWidth
                 value={notes.style}
-                onChange={(e) =>
-                  setNotes({
-                    ...notes,
-                    style: e.target.value,
-                  })
-                }
+                onChange={(e) => handleNotesChange("style", e.target.value)}
                 sx={{ mb: 2 }}
               />
               <Typography variant="h6" gutterBottom>
@@ -233,6 +235,7 @@ export default function EditNovel() {
           </Grid>
         </Grid>
       </Box>
+      {/* <Box>{content}</Box> */}
       <AISettingsDialog
         open={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}

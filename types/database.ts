@@ -4,6 +4,12 @@ export interface Novel {
   content: string;
   createdAt: Date;
   updatedAt: Date;
+  notes: {
+    characters: string[];
+    settings: string[];
+    plotPoints: string[];
+    style: string;
+  };
 }
 
 export interface NovelImage {

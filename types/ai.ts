@@ -9,12 +9,6 @@ export interface AIContext {
     prompt: string,
     context: {
       content: string;
-      notes: {
-        characters: string[];
-        settings: string[];
-        plotPoints: string[];
-        style: string;
-      };
     }
   ) => Promise<{
     content: string;

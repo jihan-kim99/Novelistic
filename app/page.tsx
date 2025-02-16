@@ -28,10 +28,16 @@ export default function Home() {
 
   const handleCreateNew = async () => {
     const newNovel: Novel = {
-      title: "Untitled Novel",
+      title: "My Novel",
       content: "",
       createdAt: new Date(),
       updatedAt: new Date(),
+      notes: {
+        characters: [],
+        settings: [],
+        plotPoints: [],
+        style: "",
+      },
     };
 
     try {

@@ -9,18 +9,7 @@ export function AIProvider({ children }: { children: React.ReactNode }) {
   const [model, setModel] = useState<AIModel>("gemini");
   const [apiKey, setApiKey] = useState<string>("");
 
-  const generate = async (
-    prompt: string,
-    context: {
-      content: string;
-      notes: {
-        characters: string[];
-        settings: string[];
-        plotPoints: string[];
-        style: string;
-      };
-    }
-  ) => {
+  const generate = async (prompt: string, context: { content: string }) => {
     try {
       const response = await fetch("/api/gemini", {
         method: "POST",
@@ -30,16 +19,12 @@ export function AIProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({
           message: prompt,
           content: context.content,
-          notes: context.notes,
           apiKey,
         }),
       });
 
       const data = await response.json();
-      return {
-        content: data.response?.content || "",
-        notes: data.response?.notes || context.notes,
-      };
+      return data.response || "";
     } catch (error) {
       console.error("AI generation failed:", error);
       throw error;

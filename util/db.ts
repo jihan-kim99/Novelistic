@@ -40,6 +40,9 @@ export class NovelisticDB {
           });
           novelStore.createIndex("title", "title", { unique: false });
           novelStore.createIndex("updatedAt", "updatedAt", { unique: false });
+
+          // Add default empty notes structure when creating new novels
+          novelStore.createIndex("notes", "notes", { unique: false });
         }
 
         if (!db.objectStoreNames.contains("images")) {
