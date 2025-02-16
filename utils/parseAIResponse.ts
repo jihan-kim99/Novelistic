@@ -8,6 +8,25 @@ interface AIResponse {
   };
 }
 
+function cleanAndFormatHTML(text: string): string {
+  // Remove any existing HTML tags but preserve line breaks
+  const cleanedText = text
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]*>/g, "")
+    .trim();
+
+  // Wrap paragraphs in proper HTML tags
+  return cleanedText
+    .split("\n")
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph)
+    .map(
+      (paragraph) =>
+        `<p><span style="color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);">${paragraph}</span></p>`
+    )
+    .join("\n");
+}
+
 export function parseAIResponse(response: string): AIResponse {
   // Remove any markdown code block syntax
   const cleanedResponse = response.replace(/```json\s*|\s*```/g, "");
@@ -15,7 +34,7 @@ export function parseAIResponse(response: string): AIResponse {
   try {
     const parsed = JSON.parse(cleanedResponse);
     return {
-      content: parsed.content || "",
+      content: cleanAndFormatHTML(parsed.content || ""),
       notes: {
         characters: parsed.notes?.characters || [],
         settings: parsed.notes?.settings || [],
@@ -26,7 +45,7 @@ export function parseAIResponse(response: string): AIResponse {
   } catch (error) {
     console.error("Failed to parse AI response:", error);
     return {
-      content: response,
+      content: cleanAndFormatHTML(response),
       notes: {
         characters: [],
         settings: [],

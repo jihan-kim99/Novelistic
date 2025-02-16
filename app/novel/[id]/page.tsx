@@ -84,19 +84,10 @@ export default function EditNovel() {
     setIsGenerating(true);
 
     try {
-      console.log("Sending AI request with context:", {
-        content: content.slice(-200), // Log last 200 chars for brevity
-        notes,
-      });
-
       const response = await generate(aiCommand, {
         content,
         notes,
       });
-
-      console.log("Received AI response:", response);
-      console.log("New content:", response.content);
-      console.log("Updated notes:", response.notes);
 
       setContent(content + "\n" + response.content);
 
