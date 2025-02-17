@@ -45,13 +45,15 @@ export default function ReadNovel() {
       }
     };
 
-    db.init()
-      .then(() => loadNovelData())
-      .catch((error) => {
-        console.error("Failed to initialize DB:", error);
-        router.push("/");
-      })
-      .finally(() => setIsLoading(false));
+    if (typeof window !== "undefined") {
+      db.init()
+        .then(() => loadNovelData())
+        .catch((error) => {
+          console.error("Failed to initialize DB:", error);
+          router.push("/");
+        })
+        .finally(() => setIsLoading(false));
+    }
   }, [params.id, router]);
 
   if (isLoading) return <div>Loading...</div>;

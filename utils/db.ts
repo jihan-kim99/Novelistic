@@ -9,6 +9,8 @@ export class NovelisticDB {
   private initPromise: Promise<void> | null = null;
 
   async init(): Promise<void> {
+    if (typeof window === "undefined") return Promise.resolve();
+
     // Return existing initialization if in progress
     if (this.initPromise) return this.initPromise;
 
@@ -69,6 +71,11 @@ export class NovelisticDB {
   }
 
   private ensureInitialized() {
+    if (typeof window === "undefined") {
+      throw new Error(
+        "IndexedDB is not available during server-side rendering"
+      );
+    }
     if (!this.initialized || !this.db) {
       throw new Error(
         "Database not initialized. Call init() first and await its completion."

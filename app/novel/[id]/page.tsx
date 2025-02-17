@@ -58,13 +58,15 @@ export default function NovelOverview() {
       }
     };
 
-    db.init()
-      .then(() => loadNovelData())
-      .catch((error) => {
-        console.error("Failed to initialize DB:", error);
-        router.push("/");
-      })
-      .finally(() => setIsLoading(false));
+    if (typeof window !== "undefined") {
+      db.init()
+        .then(() => loadNovelData())
+        .catch((error) => {
+          console.error("Failed to initialize DB:", error);
+          router.push("/");
+        })
+        .finally(() => setIsLoading(false));
+    }
   }, [params.id, router]);
 
   const handleTitleChange = useCallback(

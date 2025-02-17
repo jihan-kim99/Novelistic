@@ -59,14 +59,15 @@ export default function ReadEpisode() {
         router.push("/");
       }
     };
-
-    db.init()
-      .then(() => loadData())
-      .catch((error) => {
-        console.error("Failed to initialize DB:", error);
-        router.push("/");
-      })
-      .finally(() => setIsLoading(false));
+    if (typeof window !== "undefined") {
+      db.init()
+        .then(() => loadData())
+        .catch((error) => {
+          console.error("Failed to initialize DB:", error);
+          router.push("/");
+        })
+        .finally(() => setIsLoading(false));
+    }
   }, [params.id, params.episodeId, router]);
 
   useEffect(() => {
