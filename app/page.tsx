@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { db } from "../utils/db";
+import { uploadNovel } from "../utils/upload";
 import { Novel } from "../types/database";
 import NovelList from "../components/NovelList";
 import { useRouter } from "next/navigation";
@@ -13,6 +14,7 @@ import {
   Box,
   CircularProgress,
   Stack,
+  Button,
 } from "@mui/material";
 
 export default function Home() {
@@ -27,6 +29,8 @@ export default function Home() {
     imageEndpoint,
     setImageEndpoint,
   } = useAI();
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   useEffect(() => {
     const initializeDB = async () => {
@@ -80,6 +84,44 @@ export default function Home() {
     if (values[2]) setImageEndpoint(values[2]);
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleFileDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = e.dataTransfer.files;
+    await handleFileUpload(files[0]);
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      await handleFileUpload(e.target.files[0]);
+    }
+  };
+
+  const handleFileUpload = async (file: File) => {
+    try {
+      setUploadError(null);
+      // Extract title from filename by removing the .epub extension
+      const title = file.name.replace(/\.epub$/i, "");
+      const { novel } = await uploadNovel(file, title);
+      setNovels([...novels, novel]);
+    } catch (error) {
+      setUploadError(
+        error instanceof Error ? error.message : "Failed to upload file"
+      );
+      console.error("Failed to upload epub:", error);
+    }
+  };
+
   if (loading)
     return (
       <Box
@@ -97,6 +139,44 @@ export default function Home() {
       <Typography variant="h3" component="h1" gutterBottom>
         My Novels
       </Typography>
+
+      <Paper
+        elevation={3}
+        sx={{
+          p: 3,
+          mb: 4,
+          border: isDragging ? "2px dashed #1976d2" : "2px dashed #ccc",
+          backgroundColor: isDragging
+            ? "rgba(25, 118, 210, 0.08)"
+            : "transparent",
+        }}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleFileDrop}
+      >
+        <Typography variant="h6" align="center" gutterBottom>
+          Drop EPUB file here
+        </Typography>
+        <Box textAlign="center">
+          <input
+            type="file"
+            accept=".epub"
+            style={{ display: "none" }}
+            id="epub-upload"
+            onChange={handleFileSelect}
+          />
+          <label htmlFor="epub-upload">
+            <Button variant="contained" component="span">
+              Upload EPUB
+            </Button>
+          </label>
+        </Box>
+        {uploadError && (
+          <Typography color="error" align="center" sx={{ mt: 2 }}>
+            {uploadError}
+          </Typography>
+        )}
+      </Paper>
 
       <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
         <Typography variant="h5" component="h2" gutterBottom>
