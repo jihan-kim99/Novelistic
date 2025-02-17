@@ -307,15 +307,15 @@ export const generateEpub = async (
     const { content, images } = generateChapterXhtml(episode);
     // Add episode index to ensure unique image IDs across chapters
     let newContent = content;
-    images.forEach((img) => {
+    for (const img of images) {
       const uniqueId = `ep${episodeIndex}_${img.id}`;
       allImages.set(uniqueId, img.data);
       // Update the content to use the new unique ID
-      newContent = content.replace(
+      newContent = newContent.replace(
         new RegExp(`images/${img.id}.png`, "g"),
         `images/${uniqueId}.png`
       );
-    });
+    }
     return {
       ...episode,
       newContent,

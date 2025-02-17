@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { db } from "../../../utils/db";
 import { Novel, Episode } from "../../../types/database";
@@ -30,6 +30,8 @@ export default function NovelOverview() {
   const [newEpisodeTitle, setNewEpisodeTitle] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isSavingTitle, setIsSavingTitle] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   useEffect(() => {
     const loadNovelData = async () => {
@@ -53,6 +55,29 @@ export default function NovelOverview() {
 
     loadNovelData();
   }, [params.id, router]);
+
+  const handleTitleChange = useCallback(
+    async (newTitle: string) => {
+      if (!novel) return;
+
+      try {
+        setIsSavingTitle(true);
+        const updatedNovel = {
+          ...novel,
+          title: newTitle,
+          updatedAt: new Date(),
+        };
+        await db.saveNovel(updatedNovel);
+        setNovel(updatedNovel);
+        setLastSaved(new Date());
+      } catch (error) {
+        console.error("Failed to save novel title:", error);
+      } finally {
+        setIsSavingTitle(false);
+      }
+    },
+    [novel]
+  );
 
   const handleCreateNewEpisode = async () => {
     if (!novel || !newEpisodeTitle.trim()) return;
@@ -106,11 +131,11 @@ export default function NovelOverview() {
     <div className="h-screen flex flex-col">
       <TopBar
         title={novel.title}
-        onTitleChange={(newTitle) => setNovel({ ...novel, title: newTitle })}
+        onTitleChange={handleTitleChange}
         onSave={() => {}}
         onBack={() => router.push("/")}
-        lastSaved={null}
-        isSaving={false}
+        lastSaved={lastSaved}
+        isSaving={isSavingTitle}
       />
 
       <Box sx={{ flexGrow: 1, p: 2 }}>

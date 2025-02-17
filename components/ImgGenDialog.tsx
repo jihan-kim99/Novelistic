@@ -8,7 +8,6 @@ import {
   TextField,
   Box,
   CircularProgress,
-  Alert,
 } from "@mui/material";
 import Image from "next/image";
 import { useAI } from "../contexts/AIContext";
@@ -16,79 +15,111 @@ import { useAI } from "../contexts/AIContext";
 interface ImgGenDialogProps {
   open: boolean;
   onClose: () => void;
+  onImageGenerated: (image: string, prompt: string) => void;
+  generatedImage: string | null;
+  onInsert: () => void;
 }
 
-export default function ImgGenDialog({ open, onClose }: ImgGenDialogProps) {
+export default function ImgGenDialog({
+  open,
+  onClose,
+  onImageGenerated,
+  generatedImage,
+  onInsert,
+}: ImgGenDialogProps) {
   const [prompt, setPrompt] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const { generateImage } = useAI();
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
+    setIsGenerating(true);
 
-    setLoading(true);
-    setError(null);
     try {
       const imageUrl = await generateImage(prompt);
-      console.log("Generated image:", imageUrl);
-      setGeneratedImage(imageUrl);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate image");
+      onImageGenerated(imageUrl, prompt);
+    } catch (error) {
+      console.error("Failed to generate image:", error);
     } finally {
-      setLoading(false);
+      setIsGenerating(false);
     }
   };
 
   const handleClose = () => {
     setPrompt("");
-    setGeneratedImage(null);
-    setError(null);
     onClose();
   };
 
+  const handleInsertAndClose = () => {
+    onInsert();
+    handleClose();
+  };
+
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth={false}
+      slotProps={{
+        paper: {
+          sx: {
+            width: "80vw",
+            height: "80vh",
+            maxHeight: "80vh",
+          },
+        },
+      }}
+    >
       <DialogTitle>Generate Image</DialogTitle>
       <DialogContent>
-        <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
-          <TextField
-            fullWidth
-            multiline
-            rows={4}
-            label="Image Description"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Describe the image you want to generate..."
-            disabled={loading}
-          />
-          {error && <Alert severity="error">{error}</Alert>}
-          {loading && (
-            <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
-              <CircularProgress />
-            </Box>
-          )}
-          {generatedImage && (
-            <Image
-              src={generatedImage}
-              alt="Generated"
-              width={500}
-              height={300}
-              style={{ maxWidth: "100%", height: "auto" }}
-            />
+        <TextField
+          autoFocus
+          margin="dense"
+          label="Image Description"
+          fullWidth
+          multiline
+          rows={3}
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+        />
+        <Box
+          sx={{
+            mt: 2,
+            position: "relative",
+            minHeight: "200px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            height: "60vh",
+          }}
+        >
+          {isGenerating ? (
+            <CircularProgress />
+          ) : (
+            generatedImage && (
+              <Image
+                src={generatedImage}
+                alt={prompt}
+                fill
+                style={{
+                  objectFit: "contain",
+                }}
+                sizes="80vw"
+              />
+            )
           )}
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Close</Button>
-        <Button
-          onClick={handleGenerate}
-          variant="contained"
-          color="primary"
-          disabled={loading || !prompt.trim()}
-        >
-          Generate
+        <Button onClick={handleClose}>Cancel</Button>
+        {generatedImage && (
+          <Button onClick={handleInsertAndClose} color="secondary">
+            Insert Image
+          </Button>
+        )}
+        <Button onClick={handleGenerate} disabled={isGenerating}>
+          {isGenerating ? "Generating..." : "Generate"}
         </Button>
       </DialogActions>
     </Dialog>

@@ -9,6 +9,8 @@ import { TextField, Paper, Button, Box, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import SendIcon from "@mui/icons-material/Send";
 import { useAI } from "../../../../contexts/AIContext";
+import ImageIcon from "@mui/icons-material/Image";
+import ImgGenDialog from "@/components/ImgGenDialog";
 
 export default function EditEpisode() {
   const params = useParams();
@@ -30,6 +32,9 @@ export default function EditEpisode() {
   const [summaryText, setSummaryText] = useState("");
   const [isSummarizing, setIsSummarizing] = useState(false);
   const { generate, summary } = useAI();
+  const [isImgGenOpen, setIsImgGenOpen] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [imagePrompt, setImagePrompt] = useState("");
 
   useEffect(() => {
     const loadData = async () => {
@@ -158,6 +163,21 @@ export default function EditEpisode() {
     }
   };
 
+  const handleImageGenerated = (image: string, prompt: string) => {
+    setGeneratedImage(image);
+    setImagePrompt(prompt);
+    // The dialog will stay open since we're not modifying isImgGenOpen here
+  };
+
+  const handleInsertImage = () => {
+    if (generatedImage) {
+      const imageHtml = `<img src="${generatedImage}" alt="${imagePrompt}" />`;
+      setContent(content + imageHtml);
+      setGeneratedImage(null);
+      setImagePrompt("");
+    }
+  };
+
   if (!novel || !episode) return <div>Loading...</div>;
 
   return (
@@ -173,6 +193,20 @@ export default function EditEpisode() {
       <Box sx={{ flexGrow: 1, p: 2, overflow: "hidden" }}>
         <Grid container spacing={2} sx={{ height: "100%" }}>
           <Grid size={{ xs: 12, md: 6 }}>
+            <Box sx={{ mb: 2, display: "flex", gap: 1 }}>
+              <Button
+                variant="contained"
+                startIcon={<ImageIcon />}
+                onClick={() => setIsImgGenOpen(true)}
+              >
+                Generate Image
+              </Button>
+              {generatedImage && (
+                <Button variant="contained" onClick={handleInsertImage}>
+                  Insert Generated Image
+                </Button>
+              )}
+            </Box>
             <TextEditor
               initialContent={content}
               onChange={handleContentChange}
@@ -243,7 +277,11 @@ export default function EditEpisode() {
                   rows={3}
                   fullWidth
                   value={summaryText}
-                  InputProps={{ readOnly: true }}
+                  slotProps={{
+                    input: {
+                      readOnly: true,
+                    },
+                  }}
                   sx={{ mb: 1 }}
                 />
                 <Button
@@ -281,6 +319,13 @@ export default function EditEpisode() {
           </Grid>
         </Grid>
       </Box>
+      <ImgGenDialog
+        open={isImgGenOpen}
+        onClose={() => setIsImgGenOpen(false)}
+        onImageGenerated={handleImageGenerated}
+        generatedImage={generatedImage}
+        onInsert={handleInsertImage}
+      />
     </div>
   );
 }
