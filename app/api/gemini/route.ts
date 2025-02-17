@@ -70,7 +70,6 @@ export async function POST(request: Request) {
       "- Use <br> for line breaks between paragraphs",
       "- Use HTML styling for emphasis:",
       "  * <i> for italic text where appropriate",
-      "  * Change text colors using style='color: rgb(X, X, X)' for emphasis",
       "## Current Context",
       truncatedContent ? `Previous Content:\n${truncatedContent}\n` : "",
       "## Important Notes",
@@ -87,7 +86,8 @@ export async function POST(request: Request) {
       "## Instruction",
       message,
       "\nContinue the story based on the above context. Format each sentence with proper HTML tags and styling.",
-      "\nDo not write too much in a single response. Keep the response length within 700 tokens.",
+      "\nDo not write too much in a single response. Only write the content in the user's instruction. Keep the response length within 500 tokens.",
+      "\nIf the continuation is too long, you can continue in the next response.",
       "## Language: Always use the original content language as the base language for the continuation.",
       "## return format: only the HTML content of the continuation.",
     ]

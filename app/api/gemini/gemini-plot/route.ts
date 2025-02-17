@@ -49,6 +49,7 @@ export async function POST(request: Request) {
       "- Maintain character relationships",
       "- Preserve major story beats",
       "- Reduce unnecessary details",
+      "- summerize in the lanugaue of the plot",
       "## Content to Summarize",
       plot,
       "\nProvide a concise summary of the above plot.",
