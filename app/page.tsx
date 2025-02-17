@@ -5,6 +5,15 @@ import { Novel } from "../types/database";
 import NovelList from "../components/NovelList";
 import { useRouter } from "next/navigation";
 import { useAI } from "../contexts/AIContext";
+import {
+  Container,
+  Typography,
+  Paper,
+  TextField,
+  Box,
+  CircularProgress,
+  Stack,
+} from "@mui/material";
 
 export default function Home() {
   const [novels, setNovels] = useState<Novel[]>([]);
@@ -61,82 +70,71 @@ export default function Home() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedText = e.clipboardData.getData("text");
+    const values = pastedText.split("\n").filter((v) => v.trim());
+
+    if (values[0]) setApiKey(values[0]);
+    if (values[1]) setImageApiKey(values[1]);
+    if (values[2]) setImageEndpoint(values[2]);
+  };
+
+  if (loading)
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
 
   return (
-    <div className="container">
-      <h1>My Novels</h1>
-      <div className="settings-section">
-        <h2>AI Settings</h2>
-        <div className="settings-form">
-          <div className="form-group">
-            <label htmlFor="apiKey">Gemini API Key:</label>
-            <input
-              type="password"
-              id="apiKey"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              className="settings-input"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="imageApiKey">Image Generation API Key:</label>
-            <input
-              type="password"
-              id="imageApiKey"
-              value={imageApiKey}
-              onChange={(e) => setImageApiKey(e.target.value)}
-              className="settings-input"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="imageEndpoint">Image Generation Endpoint:</label>
-            <input
-              type="text"
-              id="imageEndpoint"
-              value={imageEndpoint}
-              onChange={(e) => setImageEndpoint(e.target.value)}
-              className="settings-input"
-            />
-          </div>
-        </div>
-      </div>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Typography variant="h3" component="h1" gutterBottom>
+        My Novels
+      </Typography>
+
+      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+        <Typography variant="h5" component="h2" gutterBottom>
+          AI Settings
+        </Typography>
+        <Stack spacing={3}>
+          <TextField
+            type="password"
+            label="Gemini API Key"
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+            onPaste={handlePaste}
+            fullWidth
+            variant="outlined"
+          />
+          <TextField
+            type="password"
+            label="Image Generation API Key"
+            value={imageApiKey}
+            onChange={(e) => setImageApiKey(e.target.value)}
+            fullWidth
+            variant="outlined"
+          />
+          <TextField
+            label="Image Generation Endpoint"
+            value={imageEndpoint}
+            onChange={(e) => setImageEndpoint(e.target.value)}
+            fullWidth
+            variant="outlined"
+          />
+        </Stack>
+      </Paper>
+
       <NovelList
         novels={novels}
         onCreateNew={handleCreateNew}
         onDelete={handleDelete}
       />
-      <style jsx global>{`
-        .container {
-          width: 100%;
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 1rem;
-        }
-        .settings-section {
-          margin-bottom: 2rem;
-          padding: 1rem;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-        }
-        .settings-form {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-        .settings-input {
-          padding: 0.5rem;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          width: 100%;
-          max-width: 400px;
-        }
-      `}</style>
-    </div>
+    </Container>
   );
 }
