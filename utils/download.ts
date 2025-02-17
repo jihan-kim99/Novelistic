@@ -43,13 +43,21 @@ const generateContentOpf = (
   let manifest = "";
   let spine = "";
 
-  // Add nav and style items
+  // Add cover, index, and nav items
+  manifest +=
+    '        <item id="cover" href="xhtml/cover.xhtml" media-type="application/xhtml+xml" properties="nav"/>\n';
+  manifest +=
+    '        <item id="index" href="xhtml/index.xhtml" media-type="application/xhtml+xml"/>\n';
   manifest +=
     '        <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>\n';
   manifest +=
     '        <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>\n';
   manifest +=
     '        <item id="style" href="style.css" media-type="text/css"/>\n';
+
+  // Add to spine in correct order
+  spine += '        <itemref idref="cover"/>\n';
+  spine += '        <itemref idref="index"/>\n';
 
   // Add chapter items with proper order
   episodes.forEach((episode, index) => {
@@ -62,6 +70,11 @@ const generateContentOpf = (
   imageIds.forEach((imageId) => {
     manifest += `        <item id="${imageId}" href="images/${imageId}.png" media-type="image/png"/>\n`;
   });
+
+  // Add index page to manifest and spine
+  manifest +=
+    '        <item id="index" href="xhtml/index.xhtml" media-type="application/xhtml+xml"/>\n';
+  spine += '        <itemref idref="index"/>\n';
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id">
@@ -88,10 +101,14 @@ ${spine}    </spine>
 };
 
 const generateNavXhtml = (novel: Novel, episodes: Episode[]) => {
-  const chapters = episodes.map((episode, index) => ({
-    id: `chapter${index + 1}`,
-    title: episode.title,
-  }));
+  const chapters = [
+    { id: "cover", title: "Cover" },
+    { id: "index", title: "Index" },
+    ...episodes.map((episode, index) => ({
+      id: `chapter${index + 1}`,
+      title: episode.title,
+    })),
+  ];
 
   const chapterList = chapters
     .map(
@@ -120,17 +137,29 @@ ${chapterList}
 };
 
 const generateTocNcx = (novel: Novel, episodes: Episode[]) => {
-  const navPoints = episodes
-    .map(
-      (episode, index) => `
-    <navPoint id="chapter${index + 1}" playOrder="${index + 1}">
+  const navPoints = `
+    <navPoint id="cover" playOrder="1">
+        <navLabel>
+            <text>Cover</text>
+        </navLabel>
+        <content src="xhtml/cover.xhtml"/>
+    </navPoint>
+    <navPoint id="index" playOrder="2">
+        <navLabel>
+            <text>Index</text>
+        </navLabel>
+        <content src="xhtml/index.xhtml"/>
+    </navPoint>${episodes
+      .map(
+        (episode, index) => `
+    <navPoint id="chapter${index + 1}" playOrder="${index + 3}">
         <navLabel>
             <text>${episode.title}</text>
         </navLabel>
         <content src="xhtml/chapter${index + 1}.xhtml"/>
     </navPoint>`
-    )
-    .join("\n");
+      )
+      .join("\n")}`;
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">
@@ -229,9 +258,53 @@ const generateChapterXhtml = (episode: Episode) => {
   };
 };
 
-// Update the CSS to better style the ToC
-const generateStyleCss = () => `
-body {
+const generateCoverXhtml = (
+  novel: Novel
+) => `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>${novel.title}</title>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+    <section epub:type="cover" class="cover">
+        <h1>${novel.title}</h1>
+        <p class="author">${novel.author || "Anonymous"}</p>
+    </section>
+</body>
+</html>`;
+
+const generateIndexXhtml = (
+  novel: Novel,
+  episodes: Episode[]
+) => `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>${novel.title} - Index</title>
+    <link rel="stylesheet" type="text/css" href="../style.css"/>
+</head>
+<body>
+    <section epub:type="index">
+        <h1>Table of Contents</h1>
+        <nav>
+            ${episodes
+              .map(
+                (episode, index) =>
+                  `<p><a href="chapter${index + 1}.xhtml">${
+                    episode.title
+                  }</a></p>`
+              )
+              .join("\n            ")}
+        </nav>
+    </section>
+</body>
+</html>`;
+
+const generateStyleCss = () => `body {
     margin: 5% auto;
     max-width: 800px;
     line-height: 1.6;
@@ -278,6 +351,26 @@ nav[epub|type="toc"] a {
 
 nav[epub|type="toc"] a:hover {
     text-decoration: underline;
+}
+
+.cover {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+    text-align: center;
+}
+
+.cover h1 {
+    font-size: 2.5em;
+    margin-bottom: 0.5em;
+}
+
+.cover .author {
+    font-size: 1.5em;
+    color: #666;
+    margin-top: 0;
 }
 `;
 
@@ -362,6 +455,12 @@ export const generateEpub = async (
   // Create xhtml folder for chapters
   const xhtmlFolder = oebps.folder("xhtml");
   if (!xhtmlFolder) throw new Error("Failed to create xhtml directory");
+
+  // Add cover page
+  xhtmlFolder.file("cover.xhtml", generateCoverXhtml(novel));
+
+  // Add index page
+  xhtmlFolder.file("index.xhtml", generateIndexXhtml(novel, episodes));
 
   // Add chapters
   processedEpisodes.forEach((episode, index) => {
