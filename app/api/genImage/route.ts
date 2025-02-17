@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       prompt,
       negative_prompt = "Base:bad quality,worst quality,worst detail,sketch,censor,",
       height = 1024,
-      width = 1024,
+      width = 1360,
       num_inference_steps = 30,
       guidance_scale = 5,
       num_images = 1,

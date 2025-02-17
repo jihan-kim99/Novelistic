@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
+import { useTheme } from "../contexts/ThemeContext";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), {
   ssr: false,
@@ -18,6 +19,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
   onChange,
   onSave,
 }) => {
+  const { isDarkMode } = useTheme();
   const [value, setValue] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -91,15 +93,40 @@ const TextEditor: React.FC<TextEditorProps> = ({
         onChange={handleChange}
         modules={modules}
         formats={formats}
-        className="editor-container"
+        className={`editor-container ${isDarkMode ? "dark-mode" : ""}`}
       />
       <style jsx global>{`
         .editor-wrapper {
           padding: 1rem;
         }
         .editor-container {
-          background-color: white;
+          background-color: ${isDarkMode ? "#000000" : "white"};
+          color: ${isDarkMode ? "#fff" : "#000"};
           border-radius: 4px;
+        }
+        .editor-container.dark-mode .ql-toolbar {
+          background-color: #1a1a1a;
+          border-color: #333;
+        }
+        .editor-container.dark-mode .ql-container {
+          background-color: #000000;
+          border-color: #333;
+        }
+        .editor-container.dark-mode .ql-editor {
+          color: #fff !important; /* Force white text in dark mode */
+          background-color: #000000;
+        }
+        .editor-container.dark-mode .ql-editor p {
+          color: #fff !important; /* Ensure paragraphs also have white text */
+        }
+        .editor-container.dark-mode .ql-stroke {
+          stroke: #fff;
+        }
+        .editor-container.dark-mode .ql-fill {
+          fill: #fff;
+        }
+        .editor-container.dark-mode .ql-picker {
+          color: #fff;
         }
         .ql-toolbar {
           border-top-left-radius: 4px;
