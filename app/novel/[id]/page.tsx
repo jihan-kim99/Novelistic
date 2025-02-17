@@ -1,54 +1,47 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { db } from "../../../util/db";
-import { Novel } from "../../../types/database";
-import TextEditor from "@/components/TextEditor";
+import { db } from "../../../utils/db";
+import { Novel, Episode } from "../../../types/database";
+import {
+  Box,
+  Paper,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Button,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import TopBar from "@/components/TopBar";
-import { TextField, Paper, Button, Box, Typography } from "@mui/material";
-import Grid from "@mui/material/Grid2";
-import SendIcon from "@mui/icons-material/Send";
-import { useAI } from "../../../contexts/AIContext";
-import SettingsIcon from "@mui/icons-material/Settings";
-import AISettingsDialog from "@/components/AISettingsDialog";
+import AddIcon from "@mui/icons-material/Add";
+import { downloadNovel } from "../../../utils/download";
 
-export default function EditNovel() {
+export default function NovelOverview() {
   const params = useParams();
   const router = useRouter();
   const [novel, setNovel] = useState<Novel | null>(null);
-  const [content, setContent] = useState("");
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [episodes, setEpisodes] = useState<Episode[]>([]);
+  const [isNewEpisodeDialogOpen, setIsNewEpisodeDialogOpen] = useState(false);
+  const [newEpisodeTitle, setNewEpisodeTitle] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [title, setTitle] = useState("");
-  const [notes, setNotes] = useState({
-    characters: [] as string[],
-    settings: [] as string[],
-    plotPoints: [] as string[],
-    style: "",
-  });
-  const [aiCommand, setAiCommand] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const { generate } = useAI();
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
-    const loadNovel = async () => {
+    const loadNovelData = async () => {
       if (!params.id) return;
 
       try {
         const novelData = await db.getNovel(Number(params.id));
+        const episodesData = await db.getNovelEpisodes(Number(params.id));
+
         if (novelData) {
           setNovel(novelData);
-          setContent(novelData.content);
-          setTitle(novelData.title);
-          setNotes(
-            novelData.notes || {
-              characters: [],
-              settings: [],
-              plotPoints: [],
-              style: "",
-            }
-          );
+          setEpisodes(episodesData);
         } else {
           router.push("/");
         }
@@ -58,74 +51,52 @@ export default function EditNovel() {
       }
     };
 
-    loadNovel();
+    loadNovelData();
   }, [params.id, router]);
 
-  const handleContentChange = (newContent: string) => {
-    setContent(newContent);
-  };
+  const handleCreateNewEpisode = async () => {
+    if (!novel || !newEpisodeTitle.trim()) return;
 
-  const handleSave = async () => {
-    if (!novel) return;
-    setIsSaving(true);
-
-    const updatedNovel: Novel = {
-      ...novel,
-      title,
-      content,
-      notes,
+    const newEpisode: Episode = {
+      novelId: novel.id!,
+      title: newEpisodeTitle,
+      content: "",
+      order: episodes.length,
+      createdAt: new Date(),
       updatedAt: new Date(),
+      notes: {
+        characters: [],
+        settings: [],
+        plotPoints: [],
+        style: "",
+      },
     };
 
     try {
-      await db.saveNovel(updatedNovel);
-      setNovel(updatedNovel);
-      setLastSaved(new Date());
+      setIsSaving(true);
+      const episodeId = await db.saveEpisode(newEpisode);
+      const updatedEpisodes = await db.getNovelEpisodes(novel.id!);
+      setEpisodes(updatedEpisodes);
+      setIsNewEpisodeDialogOpen(false);
+      setNewEpisodeTitle("");
+      router.push(`/novel/${novel.id}/${episodeId}`);
     } catch (error) {
-      console.error("Failed to save novel:", error);
+      console.error("Failed to create episode:", error);
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleAiGenerate = async () => {
-    if (!aiCommand.trim()) return;
-    setIsGenerating(true);
+  const handleDownload = async () => {
+    if (!novel || !episodes.length) return;
 
     try {
-      const response = await generate(aiCommand, {
-        content,
-      });
-
-      setContent(content + response);
-      setAiCommand(""); // Clear the input after successful generation
+      setIsDownloading(true);
+      await downloadNovel(novel, episodes);
     } catch (error) {
-      console.error("AI generation failed:", error);
+      console.error("Failed to download novel:", error);
     } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  // Add auto-save for notes changes
-  const handleNotesChange = (
-    field: "characters" | "settings" | "plotPoints" | "style",
-    value: string | string[]
-  ) => {
-    const updatedNotes = {
-      ...notes,
-      [field]: value,
-    };
-    setNotes(updatedNotes);
-    // Trigger save after notes update
-    if (novel) {
-      const updatedNovel: Novel = {
-        ...novel,
-        notes: updatedNotes,
-        updatedAt: new Date(),
-      };
-      db.saveNovel(updatedNovel)
-        .then(() => setLastSaved(new Date()))
-        .catch((error) => console.error("Failed to save notes:", error));
+      setIsDownloading(false);
     }
   };
 
@@ -134,112 +105,82 @@ export default function EditNovel() {
   return (
     <div className="h-screen flex flex-col">
       <TopBar
-        title={title}
-        onTitleChange={setTitle}
-        onSave={handleSave}
+        title={novel.title}
+        onTitleChange={(newTitle) => setNovel({ ...novel, title: newTitle })}
+        onSave={() => {}}
         onBack={() => router.push("/")}
-        isSaving={isSaving}
-        lastSaved={lastSaved}
+        lastSaved={null}
+        isSaving={false}
       />
-      <Box sx={{ flexGrow: 1, p: 2, overflow: "hidden" }}>
-        <Grid container spacing={2} sx={{ height: "100%" }}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextEditor
-              initialContent={content}
-              onChange={handleContentChange}
-              onSave={handleSave}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Paper sx={{ p: 2, height: "100%", overflow: "auto" }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Typography variant="h6">Story Notes</Typography>
-                <Button
-                  startIcon={<SettingsIcon />}
-                  onClick={() => setIsSettingsOpen(true)}
-                >
-                  AI Settings
-                </Button>
-              </Box>
-              <TextField
-                label="Characters"
-                multiline
-                rows={3}
-                fullWidth
-                value={notes.characters.join("\n")}
-                onChange={(e) =>
-                  handleNotesChange("characters", e.target.value.split("\n"))
-                }
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                label="Settings"
-                multiline
-                rows={3}
-                fullWidth
-                value={notes.settings.join("\n")}
-                onChange={(e) =>
-                  handleNotesChange("settings", e.target.value.split("\n"))
-                }
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                label="Plot Points"
-                multiline
-                rows={3}
-                fullWidth
-                value={notes.plotPoints.join("\n")}
-                onChange={(e) =>
-                  handleNotesChange("plotPoints", e.target.value.split("\n"))
-                }
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                label="Writing Style"
-                multiline
-                rows={2}
-                fullWidth
-                value={notes.style}
-                onChange={(e) => handleNotesChange("style", e.target.value)}
-                sx={{ mb: 2 }}
-              />
-              <Typography variant="h6" gutterBottom>
-                AI Assistant
-              </Typography>
-              <TextField
-                label="Enter your writing prompt"
-                multiline
-                rows={3}
-                fullWidth
-                value={aiCommand}
-                onChange={(e) => setAiCommand(e.target.value)}
-                sx={{ mb: 1 }}
-              />
+
+      <Box sx={{ flexGrow: 1, p: 2 }}>
+        <Paper sx={{ p: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+            <Typography variant="h6">Episodes</Typography>
+            <Box sx={{ display: "flex", gap: 1 }}>
               <Button
                 variant="contained"
-                endIcon={<SendIcon />}
-                onClick={handleAiGenerate}
-                disabled={isGenerating}
-                fullWidth
+                color="secondary"
+                disabled={!episodes.length || isDownloading}
+                onClick={handleDownload}
               >
-                {isGenerating ? "Generating..." : "Generate"}
+                {isDownloading ? "Downloading..." : "Download EPUB"}
               </Button>
-            </Paper>
-          </Grid>
-        </Grid>
+              <Button
+                startIcon={<AddIcon />}
+                variant="contained"
+                onClick={() => setIsNewEpisodeDialogOpen(true)}
+              >
+                New Episode
+              </Button>
+            </Box>
+          </Box>
+
+          <List>
+            {episodes.map((episode) => (
+              <ListItem
+                key={episode.id}
+                component="div"
+                sx={{ cursor: "pointer" }}
+                onClick={() => router.push(`/novel/${novel.id}/${episode.id}`)}
+              >
+                <ListItemText
+                  primary={episode.title}
+                  secondary={`Last updated: ${episode.updatedAt.toLocaleDateString()}`}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
       </Box>
-      {/* <Box>{content}</Box> */}
-      <AISettingsDialog
-        open={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-      />
+
+      <Dialog
+        open={isNewEpisodeDialogOpen}
+        onClose={() => setIsNewEpisodeDialogOpen(false)}
+      >
+        <DialogTitle>Create New Episode</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Episode Title"
+            fullWidth
+            value={newEpisodeTitle}
+            onChange={(e) => setNewEpisodeTitle(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsNewEpisodeDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleCreateNewEpisode}
+            disabled={!newEpisodeTitle.trim() || isSaving}
+          >
+            Create
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

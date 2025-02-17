@@ -23,7 +23,16 @@ export default function AISettingsDialog({
   open,
   onClose,
 }: AISettingsDialogProps) {
-  const { model, setModel, apiKey, setApiKey } = useAI();
+  const {
+    model,
+    setModel,
+    apiKey,
+    setApiKey,
+    imageApiKey,
+    setImageApiKey,
+    imageEndpoint,
+    setImageEndpoint,
+  } = useAI();
 
   const handleSave = () => {
     onClose();
@@ -52,6 +61,24 @@ export default function AISettingsDialog({
           fullWidth
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
+          sx={{ mt: 2 }}
+        />
+        <TextField
+          margin="dense"
+          label="Image Generation API Key"
+          type="password"
+          fullWidth
+          value={imageApiKey}
+          onChange={(e) => setImageApiKey(e.target.value)}
+          sx={{ mt: 2 }}
+        />
+        <TextField
+          margin="dense"
+          label="Image Generation Endpoint"
+          type="text"
+          fullWidth
+          value={imageEndpoint}
+          onChange={(e) => setImageEndpoint(e.target.value)}
           sx={{ mt: 2 }}
         />
       </DialogContent>

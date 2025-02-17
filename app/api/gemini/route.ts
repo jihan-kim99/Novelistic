@@ -14,7 +14,7 @@ interface NovelGenerationRequest {
   apiKey: string;
 }
 
-const MAX_CONTENT_LENGTH = 1000; // Add this constant at the top
+const MAX_CONTENT_LENGTH = 1000;
 
 const truncateContent = (content: string) => {
   if (content.length <= MAX_CONTENT_LENGTH) return content;

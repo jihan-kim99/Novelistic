@@ -11,15 +11,19 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveIcon from "@mui/icons-material/Save";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import ImageIcon from "@mui/icons-material/Image";
+import SettingsIcon from "@mui/icons-material/Settings";
 import { useTheme } from "../contexts/ThemeContext";
+import ImgGenDialog from "./ImgGenDialog";
+import AISettingsDialog from "@/components/AISettingsDialog";
 
 interface TopBarProps {
   title: string;
   onTitleChange: (newTitle: string) => void;
   onSave: () => void;
   onBack: () => void;
-  isSaving: boolean;
-  lastSaved: Date | null;
+  isSaving?: boolean;
+  lastSaved?: Date | null;
 }
 
 export default function TopBar({
@@ -31,6 +35,8 @@ export default function TopBar({
   lastSaved,
 }: TopBarProps) {
   const [editableTitle, setEditableTitle] = useState(title);
+  const [isImgGenOpen, setIsImgGenOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
 
   useEffect(() => {
@@ -54,6 +60,12 @@ export default function TopBar({
           variant="standard"
           sx={{ flexGrow: 1 }}
         />
+        <IconButton onClick={() => setIsImgGenOpen(true)} sx={{ ml: 1 }}>
+          <ImageIcon />
+        </IconButton>
+        <IconButton onClick={() => setIsSettingsOpen(true)} sx={{ ml: 1 }}>
+          <SettingsIcon />
+        </IconButton>
         <IconButton onClick={toggleTheme} sx={{ ml: 1 }}>
           {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
@@ -70,6 +82,14 @@ export default function TopBar({
         >
           {isSaving ? "Saving..." : "Save"}
         </Button>
+        <ImgGenDialog
+          open={isImgGenOpen}
+          onClose={() => setIsImgGenOpen(false)}
+        />
+        <AISettingsDialog
+          open={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+        />
       </Toolbar>
     </AppBar>
   );

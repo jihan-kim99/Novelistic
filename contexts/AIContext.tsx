@@ -2,12 +2,15 @@
 
 import React, { createContext, useContext, useState } from "react";
 import { AIContext, AIModel } from "../types/ai";
+import { generateImage as generateImageUtil } from "../utils/generateImage";
 
 const AIServiceContext = createContext<AIContext | undefined>(undefined);
 
 export function AIProvider({ children }: { children: React.ReactNode }) {
   const [model, setModel] = useState<AIModel>("gemini");
   const [apiKey, setApiKey] = useState<string>("");
+  const [imageApiKey, setImageApiKey] = useState<string>("");
+  const [imageEndpoint, setImageEndpoint] = useState<string>("");
 
   const generate = async (prompt: string, context: { content: string }) => {
     try {
@@ -31,9 +34,56 @@ export function AIProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const generateImage = async (prompt: string) => {
+    const result = await generateImageUtil({
+      prompt,
+      apiKey: imageApiKey,
+      endPoint: imageEndpoint,
+    });
+
+    if (!result) {
+      throw new Error("Failed to generate image");
+    }
+
+    return result.processedImage;
+  };
+
+  const summary = async (plot: string) => {
+    try {
+      const response = await fetch("/api/gemini/gemini-plot", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          plot,
+          apiKey,
+        }),
+      });
+
+      const data = await response.json();
+      return data.response || "";
+    } catch (error) {
+      console.error("Plot summarization failed:", error);
+      throw error;
+    }
+  };
+
   return (
     <AIServiceContext.Provider
-      value={{ model, setModel, apiKey, setApiKey, generate }}
+      value={{
+        model,
+        setModel,
+        apiKey,
+        setApiKey,
+        imageApiKey,
+        setImageApiKey,
+        generate,
+        imageEndpoint,
+        setImageEndpoint,
+        generateImage,
+        summary,
+      }}
     >
       {children}
     </AIServiceContext.Provider>
