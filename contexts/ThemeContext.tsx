@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 import { createTheme, ThemeProvider } from "@mui/material";
-import { blue, grey } from "@mui/material/colors";
+import { blue } from "@mui/material/colors";
 
 interface ThemeContextType {
   isDarkMode: boolean;
@@ -22,16 +22,73 @@ const lightTheme = createTheme({
       default: "#ffffff",
       paper: "#f5f5f5",
     },
+    text: {
+      primary: "#000000",
+      secondary: "rgba(0, 0, 0, 0.7)",
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        contained: {
+          backgroundColor: blue[500],
+          color: "#ffffff",
+          "&:hover": {
+            backgroundColor: blue[700],
+          },
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          color: "#000000",
+        },
+      },
+    },
   },
 });
 
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
-    primary: blue,
+    primary: {
+      main: "#ffffff",
+    },
     background: {
-      default: grey[900],
-      paper: grey[800],
+      default: "#000000",
+      paper: "#000000",
+    },
+    text: {
+      primary: "#ffffff",
+      secondary: "rgba(255, 255, 255, 0.9)",
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        contained: {
+          backgroundColor: "#ffffff",
+          color: "#000000",
+          "&:hover": {
+            backgroundColor: "#e0e0e0",
+          },
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          color: "#ffffff",
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: "none",
+        },
+      },
     },
   },
 });

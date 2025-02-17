@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -10,6 +9,8 @@ import {
 import Grid from "@mui/material/Grid2";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import { useRouter } from "next/navigation";
 
 import { Novel } from "@/types/database";
 
@@ -24,6 +25,8 @@ export default function NovelList({
   onCreateNew,
   onDelete,
 }: NovelListProps) {
+  const router = useRouter();
+
   return (
     <Box sx={{ p: 3 }}>
       <Button
@@ -45,46 +48,57 @@ export default function NovelList({
             }}
             key={novel.id}
           >
-            <Link
-              href={`/novel/${novel.id}`}
-              style={{ textDecoration: "none" }}
+            <Card
+              sx={{
+                height: "100%",
+                position: "relative",
+                backgroundColor: "white",
+                boxShadow: 1,
+                cursor: "pointer",
+                "&:hover": {
+                  transform: "scale(1.02)",
+                  transition: "transform 0.2s",
+                },
+              }}
+              onClick={() => router.push(`/novel/${novel.id}`)}
             >
-              <Card
+              <Box
                 sx={{
-                  height: "100%",
-                  cursor: "pointer",
-                  "&:hover": {
-                    transform: "scale(1.02)",
-                    transition: "transform 0.2s",
-                  },
-                  position: "relative",
+                  position: "absolute",
+                  right: 8,
+                  top: 8,
+                  display: "flex",
+                  gap: 1,
                 }}
               >
                 <IconButton
                   size="small"
-                  sx={{
-                    position: "absolute",
-                    right: 8,
-                    top: 8,
-                  }}
                   onClick={(e) => {
-                    e.preventDefault();
+                    e.stopPropagation();
+                    router.push(`/read/${novel.id}`);
+                  }}
+                >
+                  <MenuBookIcon />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
                     if (novel.id) onDelete(novel.id);
                   }}
                 >
                   <DeleteIcon />
                 </IconButton>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {novel.title || "Untitled Novel"}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Last updated:{" "}
-                    {new Date(novel.updatedAt).toLocaleDateString()}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Link>
+              </Box>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  {novel.title || "Untitled Novel"}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Last updated: {new Date(novel.updatedAt).toLocaleDateString()}
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
         ))}
       </Grid>

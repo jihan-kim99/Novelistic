@@ -5,30 +5,20 @@ import { uploadNovel } from "../utils/upload";
 import { Novel } from "../types/database";
 import NovelList from "../components/NovelList";
 import { useRouter } from "next/navigation";
-import { useAI } from "../contexts/AIContext";
 import {
   Container,
   Typography,
   Paper,
-  TextField,
   Box,
   CircularProgress,
-  Stack,
   Button,
 } from "@mui/material";
+import AISettings from "../components/AISettings";
 
 export default function Home() {
   const [novels, setNovels] = useState<Novel[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const {
-    apiKey,
-    setApiKey,
-    imageApiKey,
-    setImageApiKey,
-    imageEndpoint,
-    setImageEndpoint,
-  } = useAI();
   const [isDragging, setIsDragging] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -72,16 +62,6 @@ export default function Home() {
     } catch (error) {
       console.error("Failed to delete novel:", error);
     }
-  };
-
-  const handlePaste = (e: React.ClipboardEvent) => {
-    e.preventDefault();
-    const pastedText = e.clipboardData.getData("text");
-    const values = pastedText.split("\n").filter((v) => v.trim());
-
-    if (values[0]) setApiKey(values[0]);
-    if (values[1]) setImageApiKey(values[1]);
-    if (values[2]) setImageEndpoint(values[2]);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -136,8 +116,19 @@ export default function Home() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h3" component="h1" gutterBottom>
-        My Novels
+      <Typography
+        variant="h3"
+        component="h1"
+        gutterBottom
+        sx={{
+          fontFamily: "Poppins",
+          fontWeight: 600,
+          textAlign: "center",
+          marginTop: "1rem",
+          marginBottom: "1rem",
+        }}
+      >
+        Novelistic
       </Typography>
 
       <Paper
@@ -177,39 +168,7 @@ export default function Home() {
           </Typography>
         )}
       </Paper>
-
-      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-        <Typography variant="h5" component="h2" gutterBottom>
-          AI Settings
-        </Typography>
-        <Stack spacing={3}>
-          <TextField
-            type="password"
-            label="Gemini API Key"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            onPaste={handlePaste}
-            fullWidth
-            variant="outlined"
-          />
-          <TextField
-            type="password"
-            label="Image Generation API Key"
-            value={imageApiKey}
-            onChange={(e) => setImageApiKey(e.target.value)}
-            fullWidth
-            variant="outlined"
-          />
-          <TextField
-            label="Image Generation Endpoint"
-            value={imageEndpoint}
-            onChange={(e) => setImageEndpoint(e.target.value)}
-            fullWidth
-            variant="outlined"
-          />
-        </Stack>
-      </Paper>
-
+      <AISettings />
       <NovelList
         novels={novels}
         onCreateNew={handleCreateNew}
