@@ -280,7 +280,6 @@ export default function EditEpisode() {
             </Paper>
           </Grid>
         </Grid>
-        <Box>{content}</Box>
       </Box>
     </div>
   );
