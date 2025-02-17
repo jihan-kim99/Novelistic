@@ -69,6 +69,27 @@ export function AIProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const generateImagePrompt = async (content: string) => {
+    try {
+      const response = await fetch("/api/gemini/gemini-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content,
+          apiKey: apiKey,
+        }),
+      });
+
+      const data = await response.json();
+      return data.prompt || "";
+    } catch (error) {
+      console.error("Image generation failed:", error);
+      throw error;
+    }
+  };
+
   return (
     <AIServiceContext.Provider
       value={{
@@ -83,6 +104,7 @@ export function AIProvider({ children }: { children: React.ReactNode }) {
         setImageEndpoint,
         generateImage,
         summary,
+        generateImagePrompt,
       }}
     >
       {children}

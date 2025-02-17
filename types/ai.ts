@@ -12,4 +12,5 @@ export interface AIContext {
   generate: (prompt: string, context: { content: string }) => Promise<string>;
   generateImage: (prompt: string) => Promise<string>;
   summary: (plot: string) => Promise<string>;
+  generateImagePrompt: (content: string) => Promise<string>;
 }
