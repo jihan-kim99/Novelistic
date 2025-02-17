@@ -10,6 +10,7 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
+  useTheme,
 } from "@mui/material";
 import { useAI } from "../contexts/AIContext";
 import { AIModel } from "@/types/ai";
@@ -23,6 +24,7 @@ export default function AISettingsDialog({
   open,
   onClose,
 }: AISettingsDialogProps) {
+  const theme = useTheme();
   const {
     model,
     setModel,
@@ -39,7 +41,17 @@ export default function AISettingsDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      slotProps={{
+        paper: {
+          sx: {
+            backgroundColor: theme.palette.background.paper,
+          },
+        },
+      }}
+    >
       <DialogTitle>AI Settings</DialogTitle>
       <DialogContent>
         <FormControl fullWidth sx={{ mt: 2 }}>

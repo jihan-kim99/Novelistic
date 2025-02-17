@@ -7,10 +7,12 @@ import {
   Typography,
   Stack,
   TextField,
+  useTheme,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const AISettings = () => {
+  const theme = useTheme();
   const {
     apiKey,
     setApiKey,
@@ -69,7 +71,7 @@ const AISettings = () => {
   return (
     <Accordion
       sx={{
-        backgroundColor: "white",
+        backgroundColor: theme.palette.background.paper,
         borderRadius: 2,
         border: "none",
         "&:before": {

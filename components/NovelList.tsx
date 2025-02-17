@@ -5,6 +5,7 @@ import {
   Button,
   Box,
   IconButton,
+  useTheme,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import AddIcon from "@mui/icons-material/Add";
@@ -26,6 +27,7 @@ export default function NovelList({
   onDelete,
 }: NovelListProps) {
   const router = useRouter();
+  const theme = useTheme();
 
   return (
     <Box sx={{ p: 3 }}>
@@ -52,7 +54,7 @@ export default function NovelList({
               sx={{
                 height: "100%",
                 position: "relative",
-                backgroundColor: "white",
+                backgroundColor: theme.palette.background.paper,
                 boxShadow: 1,
                 cursor: "pointer",
                 "&:hover": {

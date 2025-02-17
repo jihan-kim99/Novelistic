@@ -12,8 +12,12 @@ import {
   Box,
   CircularProgress,
   Button,
+  IconButton,
 } from "@mui/material";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
 import AISettings from "../components/AISettings";
+import { useTheme } from "../contexts/ThemeContext";
 
 export default function Home() {
   const [novels, setNovels] = useState<Novel[]>([]);
@@ -21,6 +25,7 @@ export default function Home() {
   const router = useRouter();
   const [isDragging, setIsDragging] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const { isDarkMode, toggleTheme } = useTheme();
 
   useEffect(() => {
     const initializeDB = async () => {
@@ -116,20 +121,28 @@ export default function Home() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography
-        variant="h3"
-        component="h1"
-        gutterBottom
+      <Box
         sx={{
-          fontFamily: "Poppins",
-          fontWeight: 600,
-          textAlign: "center",
-          marginTop: "1rem",
-          marginBottom: "1rem",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
         }}
       >
-        Novelistic
-      </Typography>
+        <Typography
+          variant="h3"
+          component="h1"
+          sx={{
+            fontFamily: "Poppins",
+            fontWeight: 600,
+          }}
+        >
+          Novelistic
+        </Typography>
+        <IconButton onClick={toggleTheme} color="inherit">
+          {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+        </IconButton>
+      </Box>
 
       <Paper
         elevation={3}

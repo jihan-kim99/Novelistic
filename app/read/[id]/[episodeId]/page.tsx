@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useImageViewer } from "react-image-viewer-hook";
 import { useParams, useRouter } from "next/navigation";
 import { db } from "../../../../utils/db";
 import { Novel, Episode } from "../../../../types/database";
@@ -27,6 +28,8 @@ export default function ReadEpisode() {
   const [prevEpisode, setPrevEpisode] = useState<Episode | null>(null);
   const { isDarkMode, toggleTheme } = useTheme();
   const [fontSize, setFontSize] = useState(16);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const { getOnClick, ImageViewer } = useImageViewer();
 
   useEffect(() => {
     const loadData = async () => {
@@ -58,6 +61,26 @@ export default function ReadEpisode() {
     loadData();
   }, [params.id, params.episodeId, router]);
 
+  useEffect(() => {
+    if (contentRef.current) {
+      const images = contentRef.current.getElementsByTagName("img");
+      Array.from(images).forEach((img) => {
+        img.style.cursor = "pointer";
+        img.setAttribute("data-image-url", img.src);
+      });
+    }
+  }, [episode]);
+
+  const handleImageClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (target.tagName === "IMG") {
+      const imageUrl = target.getAttribute("data-image-url");
+      if (imageUrl) {
+        getOnClick(imageUrl)(event);
+      }
+    }
+  };
+
   const increaseFontSize = () => {
     setFontSize((prev) => Math.min(prev + 2, 24));
   };
@@ -76,6 +99,7 @@ export default function ReadEpisode() {
         bgcolor: isDarkMode ? "background.default" : "background.paper",
       }}
     >
+      <ImageViewer />
       <Paper
         elevation={3}
         sx={{
@@ -103,11 +127,19 @@ export default function ReadEpisode() {
           {episode.title}
         </Typography>
         <Box
+          ref={contentRef}
+          onClick={handleImageClick}
           sx={{
             my: 4,
             color: "text.primary",
             fontSize: `${fontSize}px`,
             lineHeight: 1.6,
+            "& img": {
+              maxWidth: "100%",
+              height: "auto",
+              display: "block",
+              margin: "1rem auto",
+            },
           }}
           dangerouslySetInnerHTML={{ __html: episode.content }}
         />
