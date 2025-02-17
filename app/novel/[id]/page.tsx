@@ -20,6 +20,8 @@ import {
 import TopBar from "@/components/TopBar";
 import AddIcon from "@mui/icons-material/Add";
 import { downloadNovel } from "../../../utils/download";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
 
 export default function NovelOverview() {
   const params = useParams();
@@ -32,6 +34,8 @@ export default function NovelOverview() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSavingTitle, setIsSavingTitle] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [deleteEpisodeId, setDeleteEpisodeId] = useState<number | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     const loadNovelData = async () => {
@@ -112,6 +116,21 @@ export default function NovelOverview() {
     }
   };
 
+  const handleDeleteEpisode = async () => {
+    if (!deleteEpisodeId) return;
+
+    try {
+      await db.deleteEpisode(deleteEpisodeId);
+      // Refresh episodes list
+      const updatedEpisodes = await db.getNovelEpisodes(novel!.id!);
+      setEpisodes(updatedEpisodes);
+      setIsDeleteDialogOpen(false);
+      setDeleteEpisodeId(null);
+    } catch (error) {
+      console.error("Failed to delete episode:", error);
+    }
+  };
+
   const handleDownload = async () => {
     if (!novel || !episodes.length) return;
 
@@ -167,6 +186,20 @@ export default function NovelOverview() {
                 key={episode.id}
                 component="div"
                 sx={{ cursor: "pointer" }}
+                secondaryAction={
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!episode.id) return;
+                      setDeleteEpisodeId(episode.id);
+                      setIsDeleteDialogOpen(true);
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                }
                 onClick={() => router.push(`/novel/${novel.id}/${episode.id}`)}
               >
                 <ListItemText
@@ -176,6 +209,35 @@ export default function NovelOverview() {
               </ListItem>
             ))}
           </List>
+
+          <Dialog
+            open={isDeleteDialogOpen}
+            onClose={() => {
+              setIsDeleteDialogOpen(false);
+              setDeleteEpisodeId(null);
+            }}
+          >
+            <DialogTitle>Delete Episode</DialogTitle>
+            <DialogContent>
+              <Typography>
+                Are you sure you want to delete this episode? This action cannot
+                be undone.
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => {
+                  setIsDeleteDialogOpen(false);
+                  setDeleteEpisodeId(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleDeleteEpisode} color="error">
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Paper>
       </Box>
 
