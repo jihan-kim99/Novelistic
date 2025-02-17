@@ -36,6 +36,7 @@ export default function NovelOverview() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [deleteEpisodeId, setDeleteEpisodeId] = useState<number | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadNovelData = async () => {
@@ -57,7 +58,13 @@ export default function NovelOverview() {
       }
     };
 
-    loadNovelData();
+    db.init()
+      .then(() => loadNovelData())
+      .catch((error) => {
+        console.error("Failed to initialize DB:", error);
+        router.push("/");
+      })
+      .finally(() => setIsLoading(false));
   }, [params.id, router]);
 
   const handleTitleChange = useCallback(
@@ -143,6 +150,8 @@ export default function NovelOverview() {
       setIsDownloading(false);
     }
   };
+
+  if (isLoading) return <div>Loading...</div>;
 
   if (!novel) return <div>Loading...</div>;
 

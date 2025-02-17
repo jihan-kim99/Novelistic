@@ -22,14 +22,16 @@ import { useTheme } from "../../../../contexts/ThemeContext";
 export default function ReadEpisode() {
   const params = useParams();
   const router = useRouter();
+  const { getOnClick, ImageViewer } = useImageViewer();
+  const { isDarkMode, toggleTheme } = useTheme();
+
   const [novel, setNovel] = useState<Novel | null>(null);
   const [episode, setEpisode] = useState<Episode | null>(null);
   const [nextEpisode, setNextEpisode] = useState<Episode | null>(null);
   const [prevEpisode, setPrevEpisode] = useState<Episode | null>(null);
-  const { isDarkMode, toggleTheme } = useTheme();
   const [fontSize, setFontSize] = useState(16);
+  const [isLoading, setIsLoading] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
-  const { getOnClick, ImageViewer } = useImageViewer();
 
   useEffect(() => {
     const loadData = async () => {
@@ -58,7 +60,13 @@ export default function ReadEpisode() {
       }
     };
 
-    loadData();
+    db.init()
+      .then(() => loadData())
+      .catch((error) => {
+        console.error("Failed to initialize DB:", error);
+        router.push("/");
+      })
+      .finally(() => setIsLoading(false));
   }, [params.id, params.episodeId, router]);
 
   useEffect(() => {
@@ -88,6 +96,8 @@ export default function ReadEpisode() {
   const decreaseFontSize = () => {
     setFontSize((prev) => Math.max(prev - 2, 12));
   };
+
+  if (isLoading) return <div>Loading...</div>;
 
   if (!novel || !episode) return <div>Loading...</div>;
 

@@ -50,6 +50,7 @@ export default function EditEpisode() {
   const [promptInputText, setPromptInputText] = useState("");
   const [generatedPrompt, setGeneratedPrompt] = useState("");
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
@@ -83,7 +84,13 @@ export default function EditEpisode() {
       }
     };
 
-    loadData();
+    db.init()
+      .then(() => loadData())
+      .catch((error) => {
+        console.error("Failed to initialize DB:", error);
+        router.push("/");
+      })
+      .finally(() => setIsLoading(false));
   }, [params.id, params.episodeId, router]);
 
   const handleContentChange = (newContent: string) => {
@@ -204,6 +211,8 @@ export default function EditEpisode() {
       setIsGeneratingPrompt(false);
     }
   };
+
+  if (isLoading) return <div>Loading...</div>;
 
   if (!novel || !episode) return <div>Loading...</div>;
 

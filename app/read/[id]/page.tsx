@@ -19,9 +19,11 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 export default function ReadNovel() {
   const params = useParams();
   const router = useRouter();
+  const { isDarkMode, toggleTheme } = useTheme();
+
   const [novel, setNovel] = useState<Novel | null>(null);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
-  const { isDarkMode, toggleTheme } = useTheme();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadNovelData = async () => {
@@ -43,8 +45,16 @@ export default function ReadNovel() {
       }
     };
 
-    loadNovelData();
+    db.init()
+      .then(() => loadNovelData())
+      .catch((error) => {
+        console.error("Failed to initialize DB:", error);
+        router.push("/");
+      })
+      .finally(() => setIsLoading(false));
   }, [params.id, router]);
+
+  if (isLoading) return <div>Loading...</div>;
 
   if (!novel) return <div>Loading...</div>;
 
