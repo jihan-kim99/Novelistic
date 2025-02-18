@@ -6,7 +6,6 @@ import { db } from "../../../../utils/db";
 import { Novel, Episode } from "../../../../types/database";
 import {
   Box,
-  Paper,
   Button,
   IconButton,
   ButtonGroup,
@@ -34,6 +33,8 @@ export default function ReadEpisode() {
   const [fontSize, setFontSize] = useState(16);
   const [isLoading, setIsLoading] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const loadData = async () => {
@@ -82,6 +83,21 @@ export default function ReadEpisode() {
     }
   }, [episode]);
 
+  useEffect(() => {
+    const controlNavbar = () => {
+      if (typeof window !== "undefined") {
+        const currentScrollY = window.scrollY;
+        setIsVisible(currentScrollY < lastScrollY || currentScrollY < 10);
+        setLastScrollY(currentScrollY);
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("scroll", controlNavbar);
+      return () => window.removeEventListener("scroll", controlNavbar);
+    }
+  }, [lastScrollY]);
+
   const handleImageClick = (event: React.MouseEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement;
     if (target.tagName === "IMG") {
@@ -105,20 +121,16 @@ export default function ReadEpisode() {
   if (!novel || !episode) return <div>Loading...</div>;
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        bgcolor: isDarkMode ? "background.default" : "background.paper",
-        paddingTop: "64px", // Add space for AppBar
-      }}
-    >
-      <AppBar position="fixed">
-        <Toolbar
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
+    <Box sx={{ minHeight: "100vh" }}>
+      <AppBar
+        position="fixed"
+        sx={{
+          bgcolor: isDarkMode ? "background.paper" : "background.default",
+          transition: "transform 0.3s ease",
+          transform: isVisible ? "translateY(0)" : "translateY(-100%)",
+        }}
+      >
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <IconButton
             edge="start"
             color="inherit"
@@ -144,12 +156,12 @@ export default function ReadEpisode() {
       </AppBar>
 
       <ImageViewer />
-      <Paper
-        elevation={3}
+      <Box
         sx={{
           maxWidth: 800,
           mx: "auto",
           p: 3,
+          mt: 8,
           bgcolor: isDarkMode ? "background.paper" : "background.default",
         }}
       >
@@ -196,7 +208,7 @@ export default function ReadEpisode() {
             </Button>
           )}
         </Box>
-      </Paper>
+      </Box>
     </Box>
   );
 }

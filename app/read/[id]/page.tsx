@@ -5,7 +5,6 @@ import { db } from "../../../utils/db";
 import { Novel, Episode } from "../../../types/database";
 import {
   Box,
-  Paper,
   Typography,
   List,
   ListItem,
@@ -23,6 +22,8 @@ export default function ReadNovel() {
   const params = useParams();
   const router = useRouter();
   const { isDarkMode, toggleTheme } = useTheme();
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   const [novel, setNovel] = useState<Novel | null>(null);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
@@ -59,13 +60,35 @@ export default function ReadNovel() {
     }
   }, [params.id, router]);
 
+  useEffect(() => {
+    const controlNavbar = () => {
+      if (typeof window !== "undefined") {
+        const currentScrollY = window.scrollY;
+        setIsVisible(currentScrollY < lastScrollY || currentScrollY < 10);
+        setLastScrollY(currentScrollY);
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("scroll", controlNavbar);
+      return () => window.removeEventListener("scroll", controlNavbar);
+    }
+  }, [lastScrollY]);
+
   if (isLoading) return <div>Loading...</div>;
 
   if (!novel) return <div>Loading...</div>;
 
   return (
     <Box sx={{ minHeight: "100vh" }}>
-      <AppBar position="static" color="default">
+      <AppBar
+        position="fixed"
+        sx={{
+          bgcolor: isDarkMode ? "background.paper" : "background.default",
+          transition: "transform 0.3s ease",
+          transform: isVisible ? "translateY(0)" : "translateY(-100%)",
+        }}
+      >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <IconButton
             edge="start"
@@ -85,11 +108,10 @@ export default function ReadNovel() {
       <Box
         sx={{
           p: 4,
-          bgcolor: isDarkMode ? "background.default" : "background.paper",
+          mt: 8,
         }}
       >
-        <Paper
-          elevation={3}
+        <Box
           sx={{
             maxWidth: 800,
             mx: "auto",
@@ -121,7 +143,7 @@ export default function ReadNovel() {
               </ListItem>
             ))}
           </List>
-        </Paper>
+        </Box>
       </Box>
     </Box>
   );
