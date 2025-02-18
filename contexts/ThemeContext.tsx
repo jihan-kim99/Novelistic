@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 import { createTheme, ThemeProvider } from "@mui/material";
-import { blue } from "@mui/material/colors";
 
 interface ThemeContextType {
   isDarkMode: boolean;
@@ -17,7 +16,12 @@ const ThemeContext = createContext<ThemeContextType>({
 const lightTheme = createTheme({
   palette: {
     mode: "light",
-    primary: blue,
+    primary: {
+      main: "#00897b",
+      light: "#4ebaaa",
+      dark: "#005b4f",
+      contrastText: "#ffffff",
+    },
     background: {
       default: "#ffffff",
       paper: "#f5f5f5",
@@ -31,10 +35,10 @@ const lightTheme = createTheme({
     MuiButton: {
       styleOverrides: {
         contained: {
-          backgroundColor: blue[500],
+          backgroundColor: "#2c3e50",
           color: "#ffffff",
           "&:hover": {
-            backgroundColor: blue[700],
+            backgroundColor: "#34495e",
           },
         },
       },
@@ -53,7 +57,10 @@ const darkTheme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#ffffff",
+      main: "#4ebaaa",
+      light: "#81ede0",
+      dark: "#00897b",
+      contrastText: "#000000",
     },
     background: {
       default: "#000000",

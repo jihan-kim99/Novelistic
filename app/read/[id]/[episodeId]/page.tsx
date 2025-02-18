@@ -7,16 +7,18 @@ import { Novel, Episode } from "../../../../types/database";
 import {
   Box,
   Paper,
-  Typography,
   Button,
   IconButton,
   ButtonGroup,
+  AppBar,
+  Toolbar,
 } from "@mui/material";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import FormatSizeIcon from "@mui/icons-material/FormatSize";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useTheme } from "../../../../contexts/ThemeContext";
 
 export default function ReadEpisode() {
@@ -106,10 +108,41 @@ export default function ReadEpisode() {
     <Box
       sx={{
         minHeight: "100vh",
-        p: 4,
         bgcolor: isDarkMode ? "background.default" : "background.paper",
+        paddingTop: "64px", // Add space for AppBar
       }}
     >
+      <AppBar position="fixed">
+        <Toolbar
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={() => router.push(`/read/${novel.id}`)}
+            sx={{ mr: 2 }}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <ButtonGroup variant="contained" size="small" sx={{ mr: 2 }}>
+              <Button onClick={decreaseFontSize}>
+                <FormatSizeIcon sx={{ fontSize: "1rem" }} />
+              </Button>
+              <Button onClick={increaseFontSize}>
+                <FormatSizeIcon sx={{ fontSize: "1.5rem" }} />
+              </Button>
+            </ButtonGroup>
+            <IconButton onClick={toggleTheme} color="inherit">
+              {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+            </IconButton>
+          </Box>
+        </Toolbar>
+      </AppBar>
+
       <ImageViewer />
       <Paper
         elevation={3}
@@ -120,28 +153,10 @@ export default function ReadEpisode() {
           bgcolor: isDarkMode ? "background.paper" : "background.default",
         }}
       >
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
-          <ButtonGroup variant="contained" sx={{ mr: 2 }}>
-            <Button onClick={decreaseFontSize}>
-              <FormatSizeIcon sx={{ fontSize: "1rem" }} />
-            </Button>
-            <Button onClick={increaseFontSize}>
-              <FormatSizeIcon sx={{ fontSize: "1.5rem" }} />
-            </Button>
-          </ButtonGroup>
-          <IconButton onClick={toggleTheme} color="inherit">
-            {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-          </IconButton>
-        </Box>
-
-        <Typography variant="h4" gutterBottom sx={{ color: "text.primary" }}>
-          {episode.title}
-        </Typography>
         <Box
           ref={contentRef}
           onClick={handleImageClick}
           sx={{
-            my: 4,
             color: "text.primary",
             fontSize: `${fontSize}px`,
             lineHeight: 1.6,
@@ -154,7 +169,6 @@ export default function ReadEpisode() {
           }}
           dangerouslySetInnerHTML={{ __html: episode.content }}
         />
-
         <Box
           sx={{
             display: "flex",
@@ -168,7 +182,7 @@ export default function ReadEpisode() {
               onClick={() => router.push(`/read/${novel.id}/${prevEpisode.id}`)}
               variant="contained"
             >
-              Previous Chapter
+              Back
             </Button>
           )}
           {nextEpisode && (
@@ -178,7 +192,7 @@ export default function ReadEpisode() {
               variant="contained"
               sx={{ ml: "auto" }}
             >
-              Next Chapter
+              Next
             </Button>
           )}
         </Box>
