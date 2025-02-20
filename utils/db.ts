@@ -1,7 +1,7 @@
-import { Novel, NovelImage, Episode } from "../types/database";
+import { Novel, Episode } from "../types/database";
 
 const DB_NAME = "novelisticDB";
-const DB_VERSION = 2;
+const DB_VERSION = 3; // Increased version number due to schema change
 
 export class NovelisticDB {
   private db: IDBDatabase | null = null;
@@ -42,8 +42,6 @@ export class NovelisticDB {
           });
           novelStore.createIndex("title", "title", { unique: false });
           novelStore.createIndex("updatedAt", "updatedAt", { unique: false });
-
-          // Add default empty notes structure when creating new novels
           novelStore.createIndex("notes", "notes", { unique: false });
         }
 
@@ -57,12 +55,9 @@ export class NovelisticDB {
           episodeStore.createIndex("title", "title", { unique: false });
         }
 
-        if (!db.objectStoreNames.contains("images")) {
-          const imageStore = db.createObjectStore("images", {
-            keyPath: "id",
-            autoIncrement: true,
-          });
-          imageStore.createIndex("novelId", "novelId", { unique: false });
+        // Remove old images store if it exists during upgrade
+        if (db.objectStoreNames.contains("images")) {
+          db.deleteObjectStore("images");
         }
       };
     });
@@ -86,10 +81,20 @@ export class NovelisticDB {
   async saveNovel(novel: Novel): Promise<number> {
     this.ensureInitialized();
 
+    // Ensure notes structure exists
+    const novelWithNotes: Novel = {
+      ...novel,
+      notes: novel.notes || {
+        characters: [],
+        settings: [],
+        plotPoints: [],
+      },
+    };
+
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(["novels"], "readwrite");
       const store = transaction.objectStore("novels");
-      const request = store.put(novel);
+      const request = store.put(novelWithNotes);
 
       request.onsuccess = () => resolve(request.result as number);
       request.onerror = () => reject(request.error);
@@ -118,33 +123,6 @@ export class NovelisticDB {
       const request = store.getAll();
 
       request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => reject(request.error);
-    });
-  }
-
-  async saveImage(image: NovelImage): Promise<number> {
-    this.ensureInitialized();
-
-    return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(["images"], "readwrite");
-      const store = transaction.objectStore("images");
-      const request = store.put(image);
-
-      request.onsuccess = () => resolve(request.result as number);
-      request.onerror = () => reject(request.error);
-    });
-  }
-
-  async getNovelImages(novelId: number): Promise<NovelImage[]> {
-    this.ensureInitialized();
-
-    return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(["images"], "readonly");
-      const store = transaction.objectStore("images");
-      const index = store.index("novelId");
-      const request = index.getAll(novelId);
-
-      request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
     });
   }
@@ -221,7 +199,7 @@ export class NovelisticDB {
 
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(
-        ["novels", "images", "episodes"],
+        ["novels", "episodes"],
         "readwrite"
       );
 
@@ -238,18 +216,6 @@ export class NovelisticDB {
         const episodeKeys = episodeRequest.result;
         episodeKeys.forEach((key) => {
           episodeStore.delete(key);
-        });
-      };
-
-      // Delete associated images
-      const imageStore = transaction.objectStore("images");
-      const imageIndex = imageStore.index("novelId");
-      const imageRequest = imageIndex.getAllKeys(id);
-
-      imageRequest.onsuccess = () => {
-        const imageKeys = imageRequest.result;
-        imageKeys.forEach((key) => {
-          imageStore.delete(key);
         });
       };
 

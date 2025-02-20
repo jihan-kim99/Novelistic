@@ -138,6 +138,11 @@ async function parseEpub(
     author,
     createdAt: new Date(),
     updatedAt: new Date(),
+    notes: {
+      characters: [],
+      settings: [],
+      plotPoints: [],
+    },
   };
 
   // Save novel first to get its ID

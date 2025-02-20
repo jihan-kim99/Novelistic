@@ -21,7 +21,9 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import DownloadIcon from "@mui/icons-material/Download";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 
+import NovelNotes from "@/components/NovelNotes";
 import { downloadNovel } from "@/utils/download";
 import { db } from "@/utils/db";
 import { Novel, Episode } from "@/types/database";
@@ -41,6 +43,7 @@ export default function NovelOverview() {
   const [deleteEpisodeId, setDeleteEpisodeId] = useState<number | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isNotesOpen, setIsNotesOpen] = useState(false);
 
   useEffect(() => {
     const loadNovelData = async () => {
@@ -174,9 +177,12 @@ export default function NovelOverview() {
 
       <Box sx={{ flexGrow: 1, p: 2 }}>
         <Paper sx={{ p: 2 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Typography variant="h6">Episodes</Typography>
             <Box sx={{ display: "flex", gap: 1 }}>
+              <IconButton onClick={() => setIsNotesOpen(true)}>
+                <MenuBookIcon />
+              </IconButton>
               <IconButton
                 onClick={handleDownload}
                 disabled={!episodes.length || isDownloading}
@@ -249,6 +255,14 @@ export default function NovelOverview() {
           </Dialog>
         </Paper>
       </Box>
+
+      {novel && (
+        <NovelNotes
+          novel={novel}
+          open={isNotesOpen}
+          onClose={() => setIsNotesOpen(false)}
+        />
+      )}
 
       <Dialog
         open={isNewEpisodeDialogOpen}

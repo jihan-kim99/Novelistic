@@ -1,29 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
-  TextField,
-  Button,
-  Box,
-  Typography,
   Accordion,
-  AccordionSummary,
   AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  TextField,
+  Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import SendIcon from "@mui/icons-material/Send";
+
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ImageIcon from "@mui/icons-material/Image";
 import ImgGenDialog from "@/components/ImgGenDialog";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import SendIcon from "@mui/icons-material/Send";
 
-import { useAI } from "@/contexts/AIContext";
-import { db } from "@/utils/db";
-import { Novel, Episode } from "@/types/database";
+import NovelNotes from "@/components/NovelNotes";
 import TextEditor from "@/components/TextEditor";
 import TopBar from "@/components/TopBar";
+import { Novel, Episode } from "@/types/database";
+import { db } from "@/utils/db";
+import { useAI } from "@/contexts/AIContext";
 
 export default function EditEpisode() {
   const params = useParams();
@@ -54,6 +57,7 @@ export default function EditEpisode() {
   const [generatedPrompt, setGeneratedPrompt] = useState("");
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isOpenNovelNotes, setIsOpenNovelNotes] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -276,21 +280,35 @@ export default function EditEpisode() {
                   startIcon={<ImageIcon />}
                   onClick={() => setIsImgGenOpen(true)}
                 >
-                  Generate Image
+                  Gen Img
                 </Button>
                 {generatedImage && (
                   <Button variant="contained" onClick={handleInsertImage}>
-                    Insert Generated Image
+                    Insert Image
                   </Button>
                 )}
               </Box>
-              <Button
-                variant="contained"
-                onClick={() => setIsPanelOpen(!isPanelOpen)}
-                sx={{ minWidth: "40px", width: "40px", p: 1 }}
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 1,
+                }}
               >
-                {isPanelOpen ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-              </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => setIsOpenNovelNotes(true)}
+                  sx={{ minWidth: "40px", width: "40px", p: 1 }}
+                >
+                  <MenuBookIcon />
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => setIsPanelOpen(!isPanelOpen)}
+                  sx={{ minWidth: "40px", width: "40px", p: 1 }}
+                >
+                  {isPanelOpen ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                </Button>
+              </Box>
             </Box>
             <TextEditor
               initialContent={content}
@@ -481,6 +499,13 @@ export default function EditEpisode() {
         generatedImage={generatedImage}
         onInsert={handleInsertImage}
       />
+      {novel && (
+        <NovelNotes
+          novel={novel}
+          open={isOpenNovelNotes}
+          onClose={() => setIsOpenNovelNotes(false)}
+        />
+      )}
     </div>
   );
 }

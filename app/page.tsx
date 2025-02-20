@@ -51,6 +51,11 @@ export default function Home() {
       title: "My Novel",
       createdAt: new Date(),
       updatedAt: new Date(),
+      notes: {
+        characters: [],
+        settings: [],
+        plotPoints: [],
+      },
     };
 
     try {

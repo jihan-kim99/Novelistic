@@ -80,7 +80,7 @@ export async function POST(request: Request) {
         ? `Settings:\n${notes.settings.join("\n")}\n`
         : "",
       notes?.plotPoints?.length
-        ? `Key Plot Points:\n${notes.plotPoints.join("\n")}\n`
+        ? `Key Plot Point from last episodes:\n${notes.plotPoints.join("\n")}\n`
         : "",
       notes?.style ? `Writing Style:\n${notes.style}\n` : "",
       "## Instruction",
