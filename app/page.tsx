@@ -1,10 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
-import { db } from "../utils/db";
-import { uploadNovel } from "../utils/upload";
-import { Novel } from "../types/database";
-import NovelList from "../components/NovelList";
+
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   Container,
   Typography,
@@ -16,16 +13,22 @@ import {
 } from "@mui/material";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
-import AISettings from "../components/AISettings";
-import { useTheme } from "../contexts/ThemeContext";
+
+import AISettings from "@/components/AISettings";
+import NovelList from "@/components/NovelList";
+import { Novel } from "@/types/database";
+import { db } from "@/utils/db";
+import { uploadNovel } from "@/utils/upload";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Home() {
+  const { isDarkMode, toggleTheme } = useTheme();
+  const router = useRouter();
+
   const [novels, setNovels] = useState<Novel[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
   const [isDragging, setIsDragging] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const { isDarkMode, toggleTheme } = useTheme();
 
   useEffect(() => {
     const initializeDB = async () => {

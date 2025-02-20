@@ -1,8 +1,7 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { db } from "../../../utils/db";
-import { Novel, Episode } from "../../../types/database";
 import {
   Box,
   Typography,
@@ -12,19 +11,22 @@ import {
   AppBar,
   Toolbar,
 } from "@mui/material";
-import { useTheme } from "../../../contexts/ThemeContext";
 import IconButton from "@mui/material/IconButton";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
+import { useTheme } from "@/contexts/ThemeContext";
+import { db } from "@/utils/db";
+import { Novel, Episode } from "@/types/database";
+
 export default function ReadNovel() {
   const params = useParams();
   const router = useRouter();
   const { isDarkMode, toggleTheme } = useTheme();
+
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-
   const [novel, setNovel] = useState<Novel | null>(null);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [isLoading, setIsLoading] = useState(true);

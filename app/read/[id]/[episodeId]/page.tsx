@@ -1,9 +1,8 @@
 "use client";
+
 import { useEffect, useState, useRef } from "react";
 import { useImageViewer } from "react-image-viewer-hook";
 import { useParams, useRouter } from "next/navigation";
-import { db } from "../../../../utils/db";
-import { Novel, Episode } from "../../../../types/database";
 import {
   Box,
   Button,
@@ -18,7 +17,10 @@ import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import FormatSizeIcon from "@mui/icons-material/FormatSize";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useTheme } from "../../../../contexts/ThemeContext";
+
+import { db } from "@/utils/db";
+import { useTheme } from "@/contexts/ThemeContext";
+import { Novel, Episode } from "@/types/database";
 
 export default function ReadEpisode() {
   const params = useParams();

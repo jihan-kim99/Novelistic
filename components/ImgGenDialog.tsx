@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useState } from "react";
 import {
   Dialog,
@@ -9,8 +10,8 @@ import {
   Box,
   CircularProgress,
 } from "@mui/material";
-import Image from "next/image";
-import { useAI } from "../contexts/AIContext";
+
+import { useAI } from "@/contexts/AIContext";
 
 interface ImgGenDialogProps {
   open: boolean;
@@ -27,9 +28,10 @@ export default function ImgGenDialog({
   generatedImage,
   onInsert,
 }: ImgGenDialogProps) {
+  const { generateImage } = useAI();
+
   const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
-  const { generateImage } = useAI();
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;

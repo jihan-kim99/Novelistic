@@ -1,10 +1,7 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { db } from "../../../../utils/db";
-import { Novel, Episode } from "../../../../types/database";
-import TextEditor from "@/components/TextEditor";
-import TopBar from "@/components/TopBar";
 import {
   TextField,
   Button,
@@ -16,16 +13,23 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import SendIcon from "@mui/icons-material/Send";
-import { useAI } from "../../../../contexts/AIContext";
 import ImageIcon from "@mui/icons-material/Image";
 import ImgGenDialog from "@/components/ImgGenDialog";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
+import { useAI } from "@/contexts/AIContext";
+import { db } from "@/utils/db";
+import { Novel, Episode } from "@/types/database";
+import TextEditor from "@/components/TextEditor";
+import TopBar from "@/components/TopBar";
+
 export default function EditEpisode() {
   const params = useParams();
   const router = useRouter();
+  const { generate, summary, generateImagePrompt } = useAI();
+
   const [novel, setNovel] = useState<Novel | null>(null);
   const [episode, setEpisode] = useState<Episode | null>(null);
   const [content, setContent] = useState("");
@@ -42,7 +46,6 @@ export default function EditEpisode() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [summaryText, setSummaryText] = useState("");
   const [isSummarizing, setIsSummarizing] = useState(false);
-  const { generate, summary, generateImagePrompt } = useAI();
   const [isImgGenOpen, setIsImgGenOpen] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [imagePrompt, setImagePrompt] = useState("");

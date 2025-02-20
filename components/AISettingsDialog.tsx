@@ -12,8 +12,9 @@ import {
   SelectChangeEvent,
   useTheme,
 } from "@mui/material";
-import { useAI } from "../contexts/AIContext";
-import { AIModel } from "@/types/ai";
+
+import { useAI } from "@/contexts/AIContext";
+import type { AIModel } from "@/types/ai";
 
 interface AISettingsDialogProps {
   open: boolean;

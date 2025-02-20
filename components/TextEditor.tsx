@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import React, { useEffect, useState } from "react";
 import "react-quill-new/dist/quill.snow.css";
-import { useTheme } from "../contexts/ThemeContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), {
   ssr: false,
@@ -20,6 +20,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
   onSave,
 }) => {
   const { isDarkMode } = useTheme();
+
   const [value, setValue] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 

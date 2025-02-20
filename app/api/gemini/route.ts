@@ -89,7 +89,7 @@ export async function POST(request: Request) {
       "\nDo not write too much in a single response. Only write the content in the user's instruction. Keep the response length within 500 tokens.",
       "\nIf the continuation is too long, you can continue in the next response.",
       "## Language: Always use the original content language as the base language for the continuation.",
-      "## return format: only the HTML content of the continuation.",
+      "## return format: only the HTML content of the continuation. do not put ```html in front",
     ]
       .filter(Boolean)
       .join("\n");

@@ -1,8 +1,7 @@
 "use client";
+
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { db } from "../../../utils/db";
-import { Novel, Episode } from "../../../types/database";
 import {
   Box,
   Paper,
@@ -19,13 +18,18 @@ import {
 } from "@mui/material";
 import TopBar from "@/components/TopBar";
 import AddIcon from "@mui/icons-material/Add";
-import { downloadNovel } from "../../../utils/download";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
+import DownloadIcon from "@mui/icons-material/Download";
+
+import { downloadNovel } from "@/utils/download";
+import { db } from "@/utils/db";
+import { Novel, Episode } from "@/types/database";
 
 export default function NovelOverview() {
   const params = useParams();
   const router = useRouter();
+
   const [novel, setNovel] = useState<Novel | null>(null);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [isNewEpisodeDialogOpen, setIsNewEpisodeDialogOpen] = useState(false);
@@ -173,21 +177,15 @@ export default function NovelOverview() {
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
             <Typography variant="h6">Episodes</Typography>
             <Box sx={{ display: "flex", gap: 1 }}>
-              <Button
-                variant="contained"
-                color="secondary"
-                disabled={!episodes.length || isDownloading}
+              <IconButton
                 onClick={handleDownload}
+                disabled={!episodes.length || isDownloading}
               >
-                {isDownloading ? "Downloading..." : "Download EPUB"}
-              </Button>
-              <Button
-                startIcon={<AddIcon />}
-                variant="contained"
-                onClick={() => setIsNewEpisodeDialogOpen(true)}
-              >
-                New Episode
-              </Button>
+                <DownloadIcon />
+              </IconButton>
+              <IconButton onClick={() => setIsNewEpisodeDialogOpen(true)}>
+                <AddIcon />
+              </IconButton>
             </Box>
           </Box>
 

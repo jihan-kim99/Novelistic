@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useAI } from "../contexts/AIContext";
 import {
   Accordion,
   AccordionSummary,
@@ -10,6 +9,8 @@ import {
   useTheme,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
+import { useAI } from "@/contexts/AIContext";
 
 const AISettings = () => {
   const theme = useTheme();

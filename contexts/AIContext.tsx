@@ -1,8 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useState } from "react";
-import { AIContext, AIModel } from "../types/ai";
-import { generateImage as generateImageUtil } from "../utils/generateImage";
+
+import { AIContext, AIModel } from "@/types/ai";
+import { generateImage as generateImageUtil } from "@/utils/generateImage";
 
 const AIServiceContext = createContext<AIContext | undefined>(undefined);
 

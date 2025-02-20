@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -11,9 +12,8 @@ import Grid from "@mui/material/Grid2";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import { useRouter } from "next/navigation";
 
-import { Novel } from "@/types/database";
+import type { Novel } from "@/types/database";
 
 interface NovelListProps {
   novels: Novel[];

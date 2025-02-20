@@ -4,7 +4,6 @@ import {
   Toolbar,
   IconButton,
   TextField,
-  Button,
   Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -12,8 +11,9 @@ import SaveIcon from "@mui/icons-material/Save";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { useTheme } from "../contexts/ThemeContext";
 import AISettingsDialog from "@/components/AISettingsDialog";
+
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface TopBarProps {
   title: string;
@@ -32,9 +32,10 @@ export default function TopBar({
   isSaving,
   lastSaved,
 }: TopBarProps) {
+  const { isDarkMode, toggleTheme } = useTheme();
+
   const [editableTitle, setEditableTitle] = useState(title);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { isDarkMode, toggleTheme } = useTheme();
 
   useEffect(() => {
     setEditableTitle(title);
@@ -57,25 +58,20 @@ export default function TopBar({
           variant="standard"
           sx={{ flexGrow: 1 }}
         />
-        <IconButton onClick={() => setIsSettingsOpen(true)} sx={{ ml: 1 }}>
+        <IconButton onClick={() => setIsSettingsOpen(true)}>
           <SettingsIcon />
         </IconButton>
-        <IconButton onClick={toggleTheme} sx={{ ml: 1 }}>
+        <IconButton onClick={toggleTheme}>
           {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
         {lastSaved && (
-          <Typography variant="body2" color="text.secondary" sx={{ mx: 2 }}>
+          <Typography variant="body2" color="text.secondary">
             Last saved: {lastSaved.toLocaleTimeString()}
           </Typography>
         )}
-        <Button
-          startIcon={<SaveIcon />}
-          variant="contained"
-          onClick={onSave}
-          disabled={isSaving}
-        >
-          {isSaving ? "Saving..." : "Save"}
-        </Button>
+        <IconButton onClick={onSave} disabled={isSaving}>
+          <SaveIcon />
+        </IconButton>
         <AISettingsDialog
           open={isSettingsOpen}
           onClose={() => setIsSettingsOpen(false)}
