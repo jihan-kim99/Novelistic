@@ -4,12 +4,18 @@ import { HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 
 interface ImagePromptRequest {
   content: string;
+  notes?: {
+    characters?: string[];
+    settings?: string[];
+    plotPoints?: string[];
+    style?: string;
+  };
   apiKey: string;
 }
 
 export async function POST(request: Request) {
   try {
-    const { content, apiKey }: ImagePromptRequest = await request.json();
+    const { content, apiKey, notes }: ImagePromptRequest = await request.json();
 
     if (!apiKey) {
       return NextResponse.json(
@@ -41,9 +47,34 @@ export async function POST(request: Request) {
       ],
     });
 
+    //   notes?.characters?.length
+    //   ? `Characters:\n${notes.characters.join("\n")}\n`
+    //   : "",
+    // notes?.settings?.length
+    //   ? `Settings:\n${notes.settings.join("\n")}\n`
+    //   : "",
+    // notes?.plotPoints?.length
+    //   ? `Key Plot Point from last episodes:\n${notes.plotPoints.join("\n")}\n`
+    //   : "",
+    // notes?.style ? `Writing Style:\n${notes.style}\n` : "",
+
+    const notesString = [
+      notes?.characters?.length
+        ? `Characters:\n${notes.characters.join("\n")}\n`
+        : "",
+      notes?.settings?.length
+        ? `Settings:\n${notes.settings.join("\n")}\n`
+        : "",
+      notes?.plotPoints?.length
+        ? `Key Plot Point from last episodes:\n${notes.plotPoints.join("\n")}\n`
+        : "",
+    ].join("\n");
+
     // Extract states from the content
     const stateExtractionPrompt = `
     From this text: "${content}"
+    and the notes below:
+    ${notes ? notesString : ""}
     Extract the following states or surroundings, one word each:
     1. Character's facial expression (e.g. smile, crying, blushed)
     2. Background, weather, setting, or lighting (e.g. beach, office, sunset)

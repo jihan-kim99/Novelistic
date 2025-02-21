@@ -4,17 +4,9 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
   useTheme,
 } from "@mui/material";
-
-import { useAI } from "@/contexts/AIContext";
-import type { AIModel } from "@/types/ai";
+import AISettings from "./AISettings";
 
 interface AISettingsDialogProps {
   open: boolean;
@@ -26,16 +18,6 @@ export default function AISettingsDialog({
   onClose,
 }: AISettingsDialogProps) {
   const theme = useTheme();
-  const {
-    model,
-    setModel,
-    apiKey,
-    setApiKey,
-    imageApiKey,
-    setImageApiKey,
-    imageEndpoint,
-    setImageEndpoint,
-  } = useAI();
 
   const handleSave = () => {
     onClose();
@@ -55,45 +37,7 @@ export default function AISettingsDialog({
     >
       <DialogTitle>AI Settings</DialogTitle>
       <DialogContent>
-        <FormControl fullWidth sx={{ mt: 2 }}>
-          <InputLabel>AI Model</InputLabel>
-          <Select
-            value={model}
-            label="AI Model"
-            onChange={(e: SelectChangeEvent<AIModel>) =>
-              setModel(e.target.value as AIModel)
-            }
-          >
-            <MenuItem value="gemini">Gemini</MenuItem>
-          </Select>
-        </FormControl>
-        <TextField
-          margin="dense"
-          label="API Key"
-          type="password"
-          fullWidth
-          value={apiKey}
-          onChange={(e) => setApiKey(e.target.value)}
-          sx={{ mt: 2 }}
-        />
-        <TextField
-          margin="dense"
-          label="Image Generation API Key"
-          type="password"
-          fullWidth
-          value={imageApiKey}
-          onChange={(e) => setImageApiKey(e.target.value)}
-          sx={{ mt: 2 }}
-        />
-        <TextField
-          margin="dense"
-          label="Image Generation Endpoint"
-          type="text"
-          fullWidth
-          value={imageEndpoint}
-          onChange={(e) => setImageEndpoint(e.target.value)}
-          sx={{ mt: 2 }}
-        />
+        <AISettings />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>

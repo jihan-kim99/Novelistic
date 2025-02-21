@@ -134,12 +134,15 @@ export default function EditEpisode() {
     setIsGenerating(true);
 
     try {
-      const response = await generate(aiCommand, {
-        content,
-      });
+      const response = await generate(
+        aiCommand,
+        {
+          content,
+        },
+        notes
+      );
 
       setContent(content + response);
-      setAiCommand(""); // Clear the input after successful generation
     } catch (error) {
       console.error("AI generation failed:", error);
     } finally {
@@ -212,7 +215,7 @@ export default function EditEpisode() {
     setIsGeneratingPrompt(true);
 
     try {
-      const prompt = await generateImagePrompt(promptInputText);
+      const prompt = await generateImagePrompt(promptInputText, notes);
       setGeneratedPrompt(prompt);
     } catch (error) {
       console.error("Failed to generate image prompt:", error);

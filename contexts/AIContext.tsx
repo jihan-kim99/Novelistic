@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState } from "react";
 
 import { AIContext, AIModel } from "@/types/ai";
 import { generateImage as generateImageUtil } from "@/utils/generateImage";
+import { Notes } from "@/types/notes";
 
 const AIServiceContext = createContext<AIContext | undefined>(undefined);
 
@@ -13,7 +14,16 @@ export function AIProvider({ children }: { children: React.ReactNode }) {
   const [imageApiKey, setImageApiKey] = useState<string>("");
   const [imageEndpoint, setImageEndpoint] = useState<string>("");
 
-  const generate = async (prompt: string, context: { content: string }) => {
+  const generate = async (
+    prompt: string,
+    context: { content: string },
+    notes?: {
+      characters?: string[];
+      settings?: string[];
+      plotPoints?: string[];
+      style?: string;
+    }
+  ) => {
     try {
       const response = await fetch("/api/gemini", {
         method: "POST",
@@ -23,6 +33,7 @@ export function AIProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({
           message: prompt,
           content: context.content,
+          notes,
           apiKey,
         }),
       });
@@ -70,7 +81,7 @@ export function AIProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const generateImagePrompt = async (content: string) => {
+  const generateImagePrompt = async (content: string, notes: Notes) => {
     try {
       const response = await fetch("/api/gemini/gemini-image", {
         method: "POST",
@@ -80,6 +91,7 @@ export function AIProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({
           content,
           apiKey: apiKey,
+          notes,
         }),
       });
 

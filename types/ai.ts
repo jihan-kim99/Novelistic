@@ -9,8 +9,25 @@ export interface AIContext {
   setImageApiKey: (key: string) => void;
   imageEndpoint: string;
   setImageEndpoint: (endpoint: string) => void;
-  generate: (prompt: string, context: { content: string }) => Promise<string>;
+  generate: (
+    prompt: string,
+    context: { content: string },
+    notes: {
+      characters?: string[];
+      settings?: string[];
+      plotPoints?: string[];
+      style?: string;
+    }
+  ) => Promise<string>;
   generateImage: (prompt: string) => Promise<string>;
   summary: (plot: string) => Promise<string>;
-  generateImagePrompt: (content: string) => Promise<string>;
+  generateImagePrompt: (
+    content: string,
+    notes: {
+      characters?: string[];
+      settings?: string[];
+      plotPoints?: string[];
+      style?: string;
+    }
+  ) => Promise<string>;
 }

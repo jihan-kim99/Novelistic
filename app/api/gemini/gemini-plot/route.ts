@@ -53,10 +53,10 @@ export async function POST(request: Request) {
       "- Maintain character relationships",
       "- Preserve major story beats",
       "- Reduce unnecessary details",
-      "- Always summerize in the lanugaue of the content provided",
+      "- Always summerize in the language of the content provided",
       "## Content to Summarize",
       plot,
-      "\nProvide a concise bullet points for the above content.",
+      "\nProvide a concise bullet points for the above content in the language of the content provided.",
     ]
       .filter(Boolean)
       .join("\n");

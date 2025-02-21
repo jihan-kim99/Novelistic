@@ -10,8 +10,6 @@ interface RunPodInput {
   guidance_scale: number;
   num_images: number;
   seed: number;
-  use_lora: boolean;
-  lora_scale: number;
   scheduler: SchedulerType;
 }
 
@@ -63,8 +61,6 @@ export async function POST(req: Request) {
       guidance_scale = 5,
       num_images = 1,
       seed = Math.floor(Math.random() * 65535),
-      use_lora = false,
-      lora_scale = 0,
       scheduler = SchedulerType.EULER_A,
     } = params;
 
@@ -78,8 +74,6 @@ export async function POST(req: Request) {
         guidance_scale,
         num_images,
         seed,
-        use_lora,
-        lora_scale,
         scheduler,
       } satisfies RunPodInput,
     };

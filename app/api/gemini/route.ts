@@ -87,12 +87,14 @@ export async function POST(request: Request) {
       message,
       "\nContinue the story based on the above context. Format each sentence with proper HTML tags and styling.",
       "\nDo not write too much in a single response. Only write the content in the user's instruction. Keep the response length within 500 tokens.",
-      "\nIf the continuation is too long, you can continue in the next response.",
+      "\nDo not make up other contents than what you are instructed to do. Only write the continuation of the content based on the user's instruction.",
       "## Language: Always use the original content language as the base language for the continuation.",
       "## return format: only the HTML content of the continuation. do not put ```html in front",
     ]
       .filter(Boolean)
       .join("\n");
+
+    console.log(constructedPrompt);
 
     const chat = model.startChat({
       history: [],
