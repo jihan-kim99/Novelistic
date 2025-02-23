@@ -17,6 +17,7 @@ import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import FormatSizeIcon from "@mui/icons-material/FormatSize";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import FormatLineSpacingIcon from "@mui/icons-material/FormatLineSpacing";
 
 import { db } from "@/utils/db";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -33,6 +34,7 @@ export default function ReadEpisode() {
   const [nextEpisode, setNextEpisode] = useState<Episode | null>(null);
   const [prevEpisode, setPrevEpisode] = useState<Episode | null>(null);
   const [fontSize, setFontSize] = useState(16);
+  const [lineHeight, setLineHeight] = useState(1.6);
   const [isLoading, setIsLoading] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(true);
@@ -118,6 +120,14 @@ export default function ReadEpisode() {
     setFontSize((prev) => Math.max(prev - 2, 12));
   };
 
+  const increaseLineHeight = () => {
+    setLineHeight((prev) => Math.min(prev + 0.2, 3.0));
+  };
+
+  const decreaseLineHeight = () => {
+    setLineHeight((prev) => Math.max(prev - 0.2, 1.0));
+  };
+
   if (isLoading) return <div>Loading...</div>;
 
   if (!novel || !episode) return <div>Loading...</div>;
@@ -150,6 +160,14 @@ export default function ReadEpisode() {
                 <FormatSizeIcon sx={{ fontSize: "1.5rem" }} />
               </Button>
             </ButtonGroup>
+            <ButtonGroup variant="contained" size="small" sx={{ mr: 2 }}>
+              <Button onClick={decreaseLineHeight}>
+                <FormatLineSpacingIcon sx={{ fontSize: "1rem" }} />
+              </Button>
+              <Button onClick={increaseLineHeight}>
+                <FormatLineSpacingIcon sx={{ fontSize: "1.5rem" }} />
+              </Button>
+            </ButtonGroup>
             <IconButton onClick={toggleTheme} color="inherit">
               {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
             </IconButton>
@@ -173,7 +191,7 @@ export default function ReadEpisode() {
           sx={{
             color: "text.primary",
             fontSize: `${fontSize}px`,
-            lineHeight: 1.6,
+            lineHeight: lineHeight,
             "& img": {
               maxWidth: "100%",
               height: "auto",
