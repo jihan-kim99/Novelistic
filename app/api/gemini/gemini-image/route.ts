@@ -47,17 +47,6 @@ export async function POST(request: Request) {
       ],
     });
 
-    //   notes?.characters?.length
-    //   ? `Characters:\n${notes.characters.join("\n")}\n`
-    //   : "",
-    // notes?.settings?.length
-    //   ? `Settings:\n${notes.settings.join("\n")}\n`
-    //   : "",
-    // notes?.plotPoints?.length
-    //   ? `Key Plot Point from last episodes:\n${notes.plotPoints.join("\n")}\n`
-    //   : "",
-    // notes?.style ? `Writing Style:\n${notes.style}\n` : "",
-
     const notesString = [
       notes?.characters?.length
         ? `Characters:\n${notes.characters.join("\n")}\n`
