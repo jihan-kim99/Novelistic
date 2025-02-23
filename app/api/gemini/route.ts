@@ -69,7 +69,7 @@ export async function POST(request: Request) {
       "- Wrap each sentence in <p><span style='color: rgb(0, 0, 0);'></span></p> tags",
       "- Use <br> for line breaks between paragraphs",
       "- Use HTML styling for emphasis:",
-      "- Use () for internal thoughts, [ ] for actions, and ** for emphasis",
+      "- Use () for internal thoughts, action, or description",
       "## Current Context",
       truncatedContent ? `Previous Content:\n${truncatedContent}\n` : "",
       "## Important Notes",
